@@ -62,7 +62,7 @@ export function EntryCard({ entry, showTopic }: { entry: Entry; showTopic?: bool
             <IconButton label="Edit" onClick={() => setEditing(true)}>
               <Pencil className="size-3.5" />
             </IconButton>
-            <IconButton label="Delete" danger onClick={() => del.mutate(entry.id)}>
+            <IconButton label="Delete" danger onClick={() => window.confirm("Delete this entry? This can\u2019t be undone.") && del.mutate(entry.id)}>
               <Trash2 className="size-3.5" />
             </IconButton>
           </div>

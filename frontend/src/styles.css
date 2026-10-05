@@ -33,6 +33,16 @@
 
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* The three radii from CLAUDE.md: rounded-panel, rounded-control, rounded-bar */
+  --radius-panel: 20px;
+  --radius-control: 12px;
+  --radius-bar: 16px;
+}
+
+/* Shared text field: inputs, textareas and selects in every form */
+@utility field {
+  @apply w-full rounded-control border border-line bg-surface px-3 py-2 text-[14px] outline-none transition placeholder:text-mute/70 focus:border-accent focus:ring-4 focus:ring-accent/10;
 }
 
 @layer base {
@@ -166,3 +176,10 @@ html:active-view-transition-type(enter-topic)::view-transition-old(main) { anima
 @keyframes vt-in-left { from { transform: translateX(-8%); opacity: 0; } }
 @keyframes vt-rise { from { transform: translateY(40px); opacity: 0; } }
 @keyframes vt-fade-out { to { opacity: 0; } }
+
+/* Web Interface Guidelines: balanced headings, no widows in prose, no double-tap zoom delay */
+@layer base {
+  h1, h2, h3, h4 { text-wrap: balance; }
+  p, li { text-wrap: pretty; }
+  a, button, [role="slider"], [role="switch"] { touch-action: manipulation; }
+}

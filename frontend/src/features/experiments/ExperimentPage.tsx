@@ -31,7 +31,7 @@ export function ExperimentPage() {
       title={exp.title}
       lead={exp.hypothesis || undefined}
       actions={
-        <Button tone="danger" icon={<Trash2 className="size-4" />} onClick={() => del.mutate(id, { onSuccess: () => navigate({ to: "/experiments" }) })}>
+        <Button tone="danger" icon={<Trash2 className="size-4" />} onClick={() => window.confirm("Delete this experiment and all its runs? This can\u2019t be undone.") && del.mutate(id, { onSuccess: () => navigate({ to: "/experiments" }) })}>
           Delete
         </Button>
       }
@@ -176,13 +176,13 @@ function RunForm({ experimentId, metrics, labelA, labelB, qualityMeans }: { expe
         value={note}
         onChange={(e) => setNote(e.target.value)}
         maxLength={2000}
-        placeholder="What happened (optional)"
+        placeholder="What happened, e.g. second run after splitting the file…"
         className="mt-3 min-h-16 w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-[14px] outline-none focus:border-accent"
       />
       <Button tone="solid" className="mt-3 w-full justify-center" icon={<Plus className="size-4" />} disabled={!filled || add.isPending} onClick={submit}>
         Add run to {variant}
       </Button>
-      {add.isError ? <p className="mt-2 text-[12.5px] text-warn">{add.error.message}</p> : null}
+      {add.isError ? <p role="status" aria-live="polite" className="mt-2 text-[12.5px] text-warn">{add.error.message}</p> : null}
     </Panel>
   );
 }
@@ -220,7 +220,7 @@ function RunTable({ experimentId, metrics }: { experimentId: string; metrics: Me
                 ))}
                 <td className="max-w-48 truncate py-2 text-mute">{r.note}</td>
                 <td className="py-2 text-right">
-                  <button type="button" aria-label="Delete run" onClick={() => del.mutate(r.id)} className="rounded p-1 text-mute opacity-0 transition hover:text-warn group-hover:opacity-100">
+                  <button type="button" aria-label="Delete run" onClick={() => window.confirm("Delete this run? This can\u2019t be undone.") && del.mutate(r.id)} className="rounded p-1 text-mute opacity-0 transition hover:text-warn group-hover:opacity-100">
                     <Trash2 className="size-3.5" />
                   </button>
                 </td>

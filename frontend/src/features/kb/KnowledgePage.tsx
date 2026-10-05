@@ -87,7 +87,7 @@ export function KnowledgePage() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search"
+            placeholder="Search entries…"
             aria-label="Search entries"
             className="h-10 w-full rounded-[12px] border border-line bg-surface pl-9 pr-3 text-[14px] outline-none focus:border-accent focus:ring-4 focus:ring-accent/10"
           />

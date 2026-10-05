@@ -5,7 +5,6 @@ import { Segmented } from "@/ui/Segmented";
 import { Toggle } from "@/ui/Toggle";
 import type { Server, Setup, Skill } from "./analyze";
 
-const input = "w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-[14px] outline-none transition placeholder:text-mute/70 focus:border-accent focus:ring-4 focus:ring-accent/10";
 
 /** Everything the audit reads. Controlled: the parent owns `setup` and re-analyses on every change. */
 export function SetupForm({ setup, onChange }: { setup: Setup; onChange: (s: Setup) => void }) {
@@ -30,7 +29,7 @@ export function SetupForm({ setup, onChange }: { setup: Setup; onChange: (s: Set
           onChange={(e) => set("memory", e.target.value)}
           spellCheck={false}
           placeholder="Paste the file here…"
-          className={`${input} min-h-64 resize-y font-mono text-[12.5px] leading-relaxed`}
+          className="field min-h-64 resize-y font-mono text-[12.5px] leading-relaxed"
         />
       </Panel>
 
@@ -104,15 +103,15 @@ function SkillRow({ skill, onChange, onRemove }: { skill: Skill; onChange: (s: S
   return (
     <div className="space-y-2 rounded-[12px] bg-sunken p-3">
       <div className="flex gap-2">
-        <input className={input} value={skill.name} onChange={(e) => onChange({ ...skill, name: e.target.value })} placeholder="Skill name" maxLength={80} />
+        <input className="field" value={skill.name} onChange={(e) => onChange({ ...skill, name: e.target.value })} placeholder="Skill name, e.g. critique-draft…" maxLength={80} />
         <RemoveButton onClick={onRemove} />
       </div>
-      <input className={input} value={skill.description} onChange={(e) => onChange({ ...skill, description: e.target.value })} placeholder="Description (the routing line)" maxLength={1024} />
+      <input className="field" value={skill.description} onChange={(e) => onChange({ ...skill, description: e.target.value })} placeholder="Description, e.g. Use when reviewing a paper draft…" maxLength={1024} />
       <textarea
-        className={`${input} min-h-16 font-mono text-[12px]`}
+        className="field min-h-16 font-mono text-[12px]"
         value={skill.body}
         onChange={(e) => onChange({ ...skill, body: e.target.value })}
-        placeholder="SKILL.md body (optional)"
+        placeholder="SKILL.md body (optional)…"
       />
     </div>
   );
@@ -121,7 +120,7 @@ function SkillRow({ skill, onChange, onRemove }: { skill: Skill; onChange: (s: S
 function ServerRow({ server, onChange, onRemove }: { server: Server; onChange: (s: Server) => void; onRemove: () => void }) {
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-[12px] bg-sunken p-2">
-      <input className={`${input} min-w-32 flex-1`} value={server.name} onChange={(e) => onChange({ ...server, name: e.target.value })} placeholder="Server" maxLength={80} />
+      <input className="field min-w-32 flex-1" value={server.name} onChange={(e) => onChange({ ...server, name: e.target.value })} placeholder="Server, e.g. github…" maxLength={80} />
       <label className="flex items-center gap-1.5 text-[12px] text-mute">
         <input
           type="number"
@@ -129,7 +128,7 @@ function ServerRow({ server, onChange, onRemove }: { server: Server; onChange: (
           max={500}
           value={server.tools}
           onChange={(e) => onChange({ ...server, tools: Math.max(0, Math.min(500, Number(e.target.value) || 0)) })}
-          className={`${input} w-20 text-right font-mono`}
+          className="field w-20 text-right font-mono"
         />
         tools
       </label>

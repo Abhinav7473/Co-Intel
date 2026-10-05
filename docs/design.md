@@ -16,7 +16,9 @@ one accent. Colour-blind-safe pairs from Okabe-Ito.
 `line` / `line-strong` are ink at 10% / 22%. Okabe sky blue #56b4e9 is the third data colour (budget bar).
 
 ## Geometry & type
-Panels 20px · controls 12px · top bar 16px · switches are pills. `card` utility = white + hairline + soft shadow.
+Panels 20px · controls 12px · top bar 16px · switches are pills. Tokens: `rounded-panel`, `rounded-control`, `rounded-bar`
+(new code uses these; ~40 older `rounded-[Npx]` values remain, see open-questions). `card` utility = white + hairline + soft
+shadow. `field` utility = every text input/textarea (one definition in `styles.css`).
 Fraunces (display), Inter (body; light weight for fine lines), JetBrains Mono (labels).
 
 ## Controls

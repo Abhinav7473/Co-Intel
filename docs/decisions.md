@@ -96,3 +96,44 @@ assets. Hero is now the context scrubber: one 200k window, bloated vs tiered, co
 hover/drag/keys, ±4% centre dead zone, one sweep on first view). Lens, flow paths, hero eyebrow, gradient accent word and the
 widget "Interactive" eyebrow removed. Exhibit added to the mistakes topic. Skills used: frontend-design, emil-design-eng,
 design-taste-frontend. *User: "Build what you can, don't use those higgsfield assets."*
+
+2026-10-05 — Versioning: git initialised by the owner (first commit "Init"); `.env`, backups and node_modules are not tracked.
+
+2026-10-05 — Higgsfield: not installing now. *Owner: "I don't think I need cool 3D assets to get my point through."*
+Also parked: Paper Shaders, react-three-fiber.
+
+2026-10-05 — Direction under review: de-prestige the talk toward zero-setup habits for busy lab members (see open-questions #0).
+
+2026-10-05 — Added evidence on screen: what "residue" is (evidence), Index Sickness stat + "methods section vs lab notebook"
+(memory), SkillReducer stat + "rubrics, not prompts" (skills), learning-RCT stat with scope caveat (human cost).
+Trifecta reframed: it needs an assistant that can act; uploading anonymised data is a privacy/IRB question, not this one.
+*Owner: habits lacked premise and mechanism; stats must be on the slides; inferences must be worded as inferences.*
+
+2026-10-05 — Stat scenes now require `study` (what the researchers did, plain language) and `meaning` (what it means
+for the reader); `make check-content` enforces both. Jargon removed from scenes (IFScale, ACE, "false completed state",
+"lossy compression", "boundary condition"). *Owner: "pushing out stats without clearly explaining what they're for will
+frustrate people."* Talk abstract + yes-man test kit drafted in `docs/talk-notes.md`.
+
+2026-10-05 — Truncation/compaction evidence added to Evidence: "Hitting the limit doesn't clean the chat" (Liu et al., Lost
+in the Middle) and the compaction stat (Wang et al. 2026, preprint). Product truncation behaviour is labelled "reported"
+(third-party guides only). Sources render as preview cards from publisher og:images fetched once by `make previews`
+(rejected: hot-linking — CSP and link rot; screenshots — heavier, more copyright exposure).
+Skills audit: `vercel-react-best-practices` → lazy routes (index 666→305 KB), unused italic font dropped;
+`web-design-guidelines` → skip link, confirm on deletes, live regions, reduced motion via `MotionConfig`, text-wrap
+balance/pretty, touch-action; `tailwind-design-system` → radius tokens + one `field` utility (inputs were 10px, now 12px).
+`improve-animations` findings recorded in open-questions, not yet planned.
+
+2026-10-05 — Every widget scene carries a guide (what you're looking at · try · the point) and a data badge (study,
+estimate, your input, diagram, our judgement, from this repository); `make check-content` enforces it. Feeling-vs-stopwatch
+rebuilt: the measured dot is fixed by design and now says so, "they felt" marker added, what-if line, link to a new
+`speed-check` experiment (`/experiments?template=`); the learning-quiz chart split into its own widget.
+*Owner: the diagrams felt decorative; "shows 19% regardless of how fast the user feels."*
+
+2026-10-05 — "9 → 0" re-checked against the paper: corrections matching Index Sickness, 9 of 45 (sessions 136–214) vs
+0 of 20 (253–395); the −56% cut was spec documents, not the rules file. Copy fixed. *Owner: "What's 9 → 0 though?"*
+
+2026-10-05 — Topic 11 "How this site was built": the AI's files and the code layers, the decision log, honest tool status,
+what was built on a whim. Numbers come from the repo via `make facts` (`scripts/build-facts.ts` → `content/build-facts.json`).
+Home topic grid replaced by a site map (5 groups × topics × scene classes × tools); every topic opens with an outline.
+Yes-man run 1 added to memory. *Owner: present how the app was built; navigate with meta-diagrams; be honest that the
+tools have no users and some parts were whims.* (Rejected: hand-typed counts — they go stale.)

@@ -30,7 +30,7 @@ export function AuditDetailPage() {
           <Button icon={<Copy className="size-4" />} onClick={() => navigate({ to: "/audit", state: { setup: audit.setup } })}>
             Edit as new audit
           </Button>
-          <Button tone="danger" icon={<Trash2 className="size-4" />} onClick={() => del.mutate(id, { onSuccess: () => navigate({ to: "/audit" }) })}>
+          <Button tone="danger" icon={<Trash2 className="size-4" />} onClick={() => window.confirm("Delete this saved audit? This can\u2019t be undone.") && del.mutate(id, { onSuccess: () => navigate({ to: "/audit" }) })}>
             Delete
           </Button>
         </>

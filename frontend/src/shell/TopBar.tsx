@@ -27,7 +27,7 @@ export function TopBar({ extra }: { extra?: ReactNode }) {
       <div className={CONTAINER}>
         <LiquidGlass radius={16} bezel={14} refraction={18} frost={1.5} className="pointer-events-auto flex h-14 items-center gap-2 px-2.5">
           <Link to="/" className="relative z-10 flex shrink-0 items-center gap-2.5 rounded-xl px-2 py-1.5">
-            <img src="/favicon.svg" alt="" className="size-7" />
+            <img src="/favicon.svg" alt="" width={28} height={28} className="size-7" />
             <span className="hidden text-[15px] font-semibold tracking-tight lg:inline">Workflow Habits</span>
           </Link>
           <nav aria-label="Main" className="relative z-10 ml-auto flex items-center gap-0.5">

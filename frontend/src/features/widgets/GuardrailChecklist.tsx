@@ -68,7 +68,7 @@ export function GuardrailChecklist() {
           );
         })}
       </ul>
-      {toggle.isError ? <p className="mt-3 text-[12.5px] text-warn">{toggle.error.message}</p> : null}
+      {toggle.isError ? <p role="status" aria-live="polite" className="mt-3 text-[12.5px] text-warn">{toggle.error.message}</p> : null}
     </WidgetFrame>
   );
 }

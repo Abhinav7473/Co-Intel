@@ -69,8 +69,8 @@ export function MemoryTiers() {
         </div>
         <p className="mt-3 text-[12.5px] text-mute">
           {mode === "bloated"
-            ? "Defensive patches, symbol IDs, history and current state in one file. Cutting lines alone (−56%) did not fix it."
-            : "Owner corrections fell 0.79 → 0.53 per session; confirmed false-“completed” cases fell 9 → 0."}
+            ? "Defensive patches, code names, history and current state in one file. Shortening the project's spec documents first (−56% lines) did not fix it."
+            : "Corrections fell from 0.79 to 0.53 per session. Corrections for the AI saying work was done when it wasn't: 9 before, 0 after."}
         </p>
       </div>
 

@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { SECTION_BY_SLUG, SECTIONS } from "@/content/brief";
 import { SLIDES } from "@/content/deck";
+import { isScene, SCENE_CLASSES, sceneLabel } from "@/content/outline";
 import { TOOL_BY_ID } from "@/content/tools";
 import { TopicEntries } from "@/features/kb/TopicEntries";
 import { useEntries } from "@/hooks/useEntries";
@@ -18,7 +19,7 @@ export function TopicPage() {
   const index = SECTIONS.indexOf(section);
   const prev = SECTIONS[index - 1];
   const next = SECTIONS[index + 1];
-  const scenes = SLIDES.filter((s) => s.chapter === slug && s.kind !== "chapter");
+  const scenes = SLIDES.filter((s) => s.chapter === slug).filter(isScene);
   const { data: entries = [] } = useEntries();
   const mine = entries.filter((e) => e.topic === slug).length;
 
@@ -53,6 +54,25 @@ export function TopicPage() {
               {mine} of your entries ↓
             </a>
           </div>
+
+          <nav aria-label="On this page" className="mt-10">
+            <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-mute">On this page · {scenes.length} scenes</div>
+            <ol className="grid gap-x-8 sm:grid-cols-2">
+              {scenes.map((s, i) => {
+                const C = SCENE_CLASSES[s.kind];
+                return (
+                  <li key={s.id}>
+                    <a href={`#${s.id}`} className="group flex items-center gap-3 border-t border-line py-2 text-[14px] transition-colors hover:text-accent">
+                      <span className="font-mono text-[11.5px] tabular-nums text-mute">{String(i + 1).padStart(2, "0")}</span>
+                      <C.icon className={cn("size-3.5 shrink-0", s.kind === "widget" ? "text-accent" : "text-ink/50")} aria-hidden />
+                      <span className="min-w-0 flex-1 truncate">{sceneLabel(s)}</span>
+                      <span className="shrink-0 text-[11.5px] text-mute">{C.name}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
         </header>
 
         {scenes.map((s) => (

@@ -49,7 +49,7 @@ export function AuditPage() {
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 maxLength={80}
-                placeholder="Label, e.g. “laptop, October”"
+                placeholder="Label, e.g. laptop, October…"
                 className="h-10 min-w-0 flex-1 rounded-[10px] border border-line bg-surface px-3 text-[14px] outline-none focus:border-accent"
               />
               <Button
@@ -65,7 +65,7 @@ export function AuditPage() {
               >
                 Save report
               </Button>
-              {save.isError ? <span className="w-full text-[12.5px] text-warn">{save.error.message}</span> : null}
+              {save.isError ? <span role="status" aria-live="polite" className="w-full text-[12.5px] text-warn">{save.error.message}</span> : null}
             </Panel>
           ) : null}
         </div>

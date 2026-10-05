@@ -5,6 +5,15 @@ Answer inline (write under the question); answered items move to `docs/decisions
 
 ## Questions
 
+### 0. Reframe (2026-10-05): what does the lab actually take home?
+Audience: busy lab members. No one will set up MCPs, maintain a tool, or keep compressed memory files current.
+Corrected by owner (2026-10-05): **the site stays maximalist** — it's tokens we minimize, not visuals.
+"Information system" = **this codebase and its files** (CLAUDE.md, docs/, decisions log, skills, scripts).
+The habits need premise → mechanism → action → fine print, not slogans (rewritten in chat 2026-10-05).
+Open: the four tools are "abstraction voids" (unused, unexplained). README now states purpose + status per tool.
+Decide per tool: re-scope (audit → project instructions; assessment → the habits; experiments → "time one task"),
+keep as presenter-only (knowledge base), or cut.
+
 ### 1. Skills — why haven't we been using them?
 We should have started here. Established skills exist for most of what was hand-rolled:
 - Already available in the session, unused: `dataviz` (charts), `code-review`, `simplify`, `security-review`, `run`.
@@ -61,18 +70,22 @@ Do attendees use the tools themselves (needs multi-user thinking) or only watch 
 Pending your pick from the asset review: Paper Shaders (mesh gradient hero, liquid-metal logo, pulsing border),
 3D context window (react-three-fiber). Also: links for "Frakt backgrounds" and the Framer components you meant.
 
-### 8. Higgsfield setup — how, and with what guardrails?
-Checked 2026-10-04: `@higgsfield/cli` 1.1.26 (MIT, official maintainers, ~27.6k downloads/week; postinstall downloads a
-checksum-verified binary from their GitHub releases). `higgsfield-ai/skills`: MIT, 1.2k★, 8 skills.
-Decide:
-- **Install location:** global on the host (breaks the Docker-only rule, but it's a tool, not a project dependency) or a
-  container with a mounted config volume for the auth token?
-- **Which skills:** all 8, or only `higgsfield-generate` (+ `higgsfield-video-explainer`)? Install with `--skill`.
-- **Spending rule:** the skill says "don't pre-estimate cost" and defaults to top-quality models. Proposed project rule:
-  always run `higgsfield generate cost …` and get your yes before every generation.
-- **Assets:** generated files are downloaded into the repo (never hotlinked). What would you generate — and for which part
-  of the talk/site? (`frontend-design` warns against decorative media.)
-- **Auth:** `higgsfield auth login` is yours to run (browser sign-in); the stored token lets any agent session spend credits.
+### 7. Preview images if the site goes public
+`public/previews/` stores publishers' own og:images (link-preview use, attributed, linked). Fine for a lab talk; if the
+site is deployed publicly, keep them, or switch to title-only cards?
+
+### 8. Animation fixes — which to plan? (`improve-animations` audit, 2026-10-05)
+| # | Sev | Where | Finding | Fix |
+|---|---|---|---|---|
+| 1 | MED | `styles.css` `--ease-spring` on `.range` thumb | Overshoot bezier on a control used constantly | `cubic-bezier(0.23,1,0.32,1)` 160ms |
+| 2 | MED | `features/assess/AssessPage.tsx` step transition 0.35s | Over 300ms on a step you click through 18 times | 200ms ease-out |
+| 3 | MED | `Scene.tsx` compare cards, `OdysseusGrid`, home topic cards | Hover lift `y:-4` — common AI-design tell | border/shadow change only |
+| 4 | LOW | widgets: Radar `scale:0.2`, Trifecta `scale:0.4` | Near-zero scale entrances look like popping | start at 0.95 + opacity |
+| 5 | LOW | ~15 hand-typed springs (stiffness 60–600) | No shared spring tokens | 2–3 named springs in `ui/motion.ts` |
+Missed opportunities: no press feedback on `Button` (scale 0.97, 160ms); KB filter changes jump instead of crossfading.
+
+### 9. Topic 11 says the tools have no users
+True today. After the talk, if people try them, update `build-status` in `deck.ts` (the honest-status list).
 
 ## Gaps (known, not yet fixed)
 - No projector/mobile pass: verify at 1920×1080 and 1280×720 with the room's actual screen.
@@ -83,3 +96,9 @@ Decide:
 - Redesign is partial: the hero is redone, the rest of the site still carries the tells listed in `docs/design.md`.
 - One unexplained console error once: view transition aborted on first load.
 - No CI; checks run only via `make lint`.
+- Site-map squares and topic outlines link to `#scene-id`. Direct loads land correctly; in-app jumps couldn't be verified
+  (the test browser pane was hidden, which aborts view transitions and pauses animation frames). Check in a real window.
+- `build-facts.json` goes stale unless `make facts` is rerun after doc edits (no check enforces it).
+- ~40 hard-coded radii (`rounded-[8|10|14|18px]`) and 12 font sizes (10–16px) outside the token set; migrate when touched.
+- Inputs lack `name`/`autocomplete`; KB kind/search and the assessment step aren't in the URL (web-design-guidelines).
+- Guidelines want Title Case buttons; the site uses sentence case on purpose (kept).

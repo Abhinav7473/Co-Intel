@@ -4,19 +4,18 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { BRIEF_THESIS, SECTIONS } from "@/content/brief";
 import { SOURCES } from "@/content/data";
-import { SLIDES } from "@/content/deck";
 import { TOOLS } from "@/content/tools";
 import { useAssessments } from "@/hooks/useAssessments";
 import { useEntries } from "@/hooks/useEntries";
 import { useExperiments } from "@/hooks/useExperiments";
 import { useSetupAudits } from "@/hooks/useSetupAudits";
 import { CONTAINER } from "@/shell/layout";
-import { Spotlight } from "@/ui/Spotlight";
+import { SourceCards } from "@/ui/SourceCards";
 import { cn } from "@/utils/cn";
 import { ContextScrubber } from "./ContextScrubber";
+import { SiteMap } from "./SiteMap";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
-const sceneCount = (slug: string) => SLIDES.filter((s) => s.chapter === slug && s.kind !== "chapter").length;
 
 export function HomePage() {
   return (
@@ -99,36 +98,12 @@ function Topics() {
   const { data: entries = [] } = useEntries();
   return (
     <section id="topics" className="scroll-mt-24">
-      <SectionHead eyebrow="The research" title="Ten topics, each one page" lead="Short scenes, details on demand. Every topic links to the tool that applies it." />
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {SECTIONS.map((s, i) => {
-          const mine = entries.filter((e) => e.topic === s.slug).length;
-          return (
-            <motion.li
-              key={s.slug}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ delay: (i % 3) * 0.06, duration: 0.6, ease: EASE }}
-            >
-              <Spotlight className={cn("card h-full rounded-[18px] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]")}>
-                <Link to="/topics/$slug" params={{ slug: s.slug }} className="relative flex h-full flex-col p-6">
-                  <span className="font-mono text-[13px] text-accent">{s.num}</span>
-                  <span className="mt-3 font-display text-2xl leading-tight tracking-tight" style={{ viewTransitionName: `topic-title-${s.slug}` }}>
-                    {s.title}
-                  </span>
-                  <span className="mt-2 flex-1 text-[14px] text-mute">{s.kicker}</span>
-                  <span className="mt-5 flex items-center gap-3 text-[12px] text-mute">
-                    <span>{sceneCount(s.slug)} scenes</span>
-                    {mine ? <span className="text-accent">· {mine} yours</span> : null}
-                    <ArrowRight className="ml-auto size-4 text-ink/40" />
-                  </span>
-                </Link>
-              </Spotlight>
-            </motion.li>
-          );
-        })}
-      </ul>
+      <SectionHead
+        eyebrow="The research"
+        title="A map of the site"
+        lead={`${SECTIONS.length} topics in five groups. Each square is one scene; its icon says what kind. Click any square to jump straight to it.`}
+      />
+      <SiteMap yours={(slug) => entries.filter((e) => e.topic === slug).length} />
     </section>
   );
 }
@@ -169,19 +144,11 @@ function Sources() {
       <AnimatePresence initial={false}>
         {open ? (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="grid gap-8 pt-6 md:grid-cols-2">
+            <div className="space-y-10 pt-6">
               {SOURCES.map((g) => (
                 <div key={g.group}>
-                  <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-[0.1em] text-mute">{g.group}</h3>
-                  <ul className="space-y-1.5">
-                    {g.links.map((l) => (
-                      <li key={l.href}>
-                        <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-[14px] text-ink/80 hover:text-accent">
-                          {l.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+                  <h3 className="mb-3 font-display text-xl tracking-tight">{g.group}</h3>
+                  <SourceCards sources={g.links} />
                 </div>
               ))}
             </div>

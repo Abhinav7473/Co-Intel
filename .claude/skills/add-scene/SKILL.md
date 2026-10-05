@@ -12,7 +12,7 @@ description: Add or edit a scene (statement, stat, compare, list, widget) in the
 3. New topic → add it to `SECTIONS` in `content/brief.ts` (with related `tools`) and give it a `chapter` scene.
    Write for the audience; presenter notes go to `docs/talk-notes.md`, questions to `docs/open-questions.md`.
 4. New widget → component in `features/widgets/`, register in `features/widgets/index.tsx`, add the id to
-   `WidgetId` in `content/types.ts`. Wrap it in `WidgetFrame`. Colours via tokens only. No `useEffect`.
+   `WidgetId` in `content/types.ts`. Wrap it in `WidgetFrame`. Its scene needs a `guide` (shows · try · point · data). Colours via tokens only. No `useEffect`.
    If it saves data, add a backend feature + migration (`docs/architecture.md`).
 5. Pick the transition by kind (see `docs/design.md` → Motion). Don't invent new ones per scene.
 6. Run `make check-content` and `make lint`. Both must pass.

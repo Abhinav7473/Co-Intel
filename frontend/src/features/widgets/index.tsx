@@ -2,8 +2,11 @@ import type { ComponentType } from "react";
 import type { WidgetId } from "@/content/types";
 import { CacheCalculator } from "./CacheCalculator";
 import { ControlMemoryBoard } from "./ControlMemoryBoard";
+import { DecisionLog } from "./DecisionLog";
 import { EvidenceDeck } from "./EvidenceDeck";
 import { GuardrailChecklist } from "./GuardrailChecklist";
+import { InfoSystem } from "./InfoSystem";
+import { LearningQuiz } from "./LearningQuiz";
 import { MemoryTiers } from "./MemoryTiers";
 import { MistakesAudit } from "./MistakesAudit";
 import { OdysseusGrid } from "./OdysseusGrid";
@@ -29,4 +32,7 @@ export const WIDGETS: Record<WidgetId, ComponentType> = {
   "perception-gap": PerceptionGap,
   "mistakes-audit": MistakesAudit,
   "spec-exhibit": SpecExhibit,
+  "learning-quiz": LearningQuiz,
+  "info-system": InfoSystem,
+  "decision-log": DecisionLog,
 };

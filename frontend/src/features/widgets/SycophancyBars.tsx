@@ -10,7 +10,7 @@ const ROWS = [
 
 export function SycophancyBars() {
   return (
-    <WidgetFrame title="Memory profiles make models agree with you" hint="Rise in agreement sycophancy with condensed user-memory profiles (CHI 2026, 38 people, two weeks).">
+    <WidgetFrame title="Memory profiles make models agree with you" hint="Researchers replayed 38 people's real chats with and without a stored profile of the user. Bars: how much more often the model agreed with the user's view when it had the profile (CHI 2026).">
       <div className="space-y-4">
         {ROWS.map((r, i) => (
           <div key={r.model} className="grid grid-cols-[8.5rem_1fr_3.5rem] items-center gap-3 sm:grid-cols-[10rem_1fr_4rem]">

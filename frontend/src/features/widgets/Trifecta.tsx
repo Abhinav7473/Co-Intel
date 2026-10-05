@@ -72,7 +72,7 @@ export function Trifecta() {
                   initial={{ opacity: 0, scale: 0.4 }}
                   animate={{ opacity: [0.6, 1, 0.6], scale: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ opacity: { repeat: Infinity, duration: 1.4 } }}
+                  transition={{ opacity: { repeat: 2, duration: 1.4 } }}
                 />
               ) : null}
             </AnimatePresence>

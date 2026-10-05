@@ -1,0 +1,527 @@
+{
+  "core": {
+    "path": "CLAUDE.md",
+    "lines": 35,
+    "rules": [
+      "Everything runs in Docker.",
+      "Dev = `docker compose up --watch` from the root, served on :8088.",
+      "No `useEffect` / `useLayoutEffect` / `useInsertionEffect` (ESLint enforces).",
+      "It is a website: native scroll only.",
+      "One light theme.",
+      "Radii: panels 20px, controls 12px, top bar 16px.",
+      "Scenes carry short lines; long text goes in `details`.",
+      "The website is audience material for a talk.",
+      "Before building anything by hand, check for an established skill/plugin that does it (and say which you used).",
+      "Pin dependency versions exactly."
+    ]
+  },
+  "docs": [
+    {
+      "path": "docs/architecture.md",
+      "lines": 52,
+      "purpose": "routes, folders, data flow, API, tables, migrations"
+    },
+    {
+      "path": "docs/design.md",
+      "lines": 61,
+      "purpose": "palette, knobs, glass, motion and transition types, component sources"
+    },
+    {
+      "path": "docs/content.md",
+      "lines": 33,
+      "purpose": "topics/scenes model, assessment questions, experiment templates, audit rules, copy limits"
+    },
+    {
+      "path": "docs/dev-env.md",
+      "lines": 30,
+      "purpose": "Docker/watch behaviour, lint, backups, known Compose quirks"
+    },
+    {
+      "path": "docs/target.md",
+      "lines": 38,
+      "purpose": "where it's heading next and which outside libraries to use"
+    },
+    {
+      "path": "docs/open-questions.md",
+      "lines": 102,
+      "purpose": "questions for the owner and known gaps (read at session start; add, don't ask in the site)"
+    },
+    {
+      "path": "docs/decisions.md",
+      "lines": 139,
+      "purpose": "append-only log of decisions and rejected options. Look things up; don't load it whole."
+    }
+  ],
+  "log": {
+    "path": "docs/decisions.md",
+    "lines": 139,
+    "decisions": [
+      {
+        "date": "2026-10-03",
+        "text": "Stack: React 19 + TanStack Router/Query + Tailwind 4 + Vite; FastAPI on Granian; Postgres 18; Alembic.",
+        "owner": "asked for this in the original spec.",
+        "why": null,
+        "rejected": "plain uvicorn — user asked for something current.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "No `useEffect` family; enforced by ESLint `no-restricted-imports`.",
+        "owner": "asked for this in the original spec.",
+        "why": "forces loaders, Query, external stores, ref callbacks.",
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "No lockfiles, no host installs; versions pinned exactly in `package.json` / `requirements.txt`.",
+        "owner": "asked for this in the original spec.",
+        "why": "Trade-off: transitive deps can drift between builds.",
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "TypeScript pinned to 6.0.3.",
+        "owner": null,
+        "why": "typescript-eslint 8.71 supports TS < 6.1 only.",
+        "rejected": "TS 7.0.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "nginx is the edge in both dev and prod on :8088; prod nginx image contains the built SPA.",
+        "owner": "asked for the frontend build to ship beside the backend; nginx gives rate limits + CSP in one place.",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Rate limiting lives in nginx, not the app.",
+        "owner": null,
+        "why": "Multiple Granian workers would each keep their own counters.",
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Vite assets are never inlined (`assetsInlineLimit: 0`).",
+        "owner": null,
+        "why": "Inlined fonts became `data:` URIs that the CSP blocked.",
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Real refraction glass via SVG displacement maps, Chromium only, frosted fallback elsewhere.",
+        "owner": "wanted bending glass, not frosted.",
+        "why": null,
+        "rejected": "CSS-only blur glass as the primary effect.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Branding is \"AI Workflow Habits\" / \"Workflow Habits\".",
+        "owner": null,
+        "why": null,
+        "rejected": "\"Co-Intel\" — user disliked it.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "One theme: graphite + one blue accent + warn for risk only. Per-section tone system deleted.",
+        "owner": null,
+        "why": null,
+        "rejected": "per-section rainbow palette — user called the colours poor.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Radii 20/12/16; top bar no longer a full pill.",
+        "owner": "bar edges too round.",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Dev is the default compose profile: `docker compose up --watch` is the whole command.",
+        "owner": null,
+        "why": null,
+        "rejected": "Makefile-only entry and a `dev` profile — the plain command started only Postgres.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Dev images use `pull_policy: build`.",
+        "owner": null,
+        "why": "Watch only syncs changes after start; containers ran stale code.",
+        "rejected": "`initial_sync` — unsupported by Compose 2.38.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "`make lint` mounts host source into throwaway containers.",
+        "owner": null,
+        "why": "`exec` linted a stale container copy and passed.",
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Content split into short scenes with three depths of detail (scene → line `more` → Details & sources).",
+        "owner": "walls of text won't be read; info on demand.",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Tried a full-screen slideshow (keyboard + wheel navigation, builds, overview).",
+        "owner": null,
+        "why": "Reverted.",
+        "rejected": "wheel hijacking, URL-per-slide.",
+        "reverted": true
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Website with screen-height scenes, native scroll, `scroll-snap-type: y proximity`, per-kind reveal transitions.",
+        "owner": null,
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Reveal triggers sit on the unclipped `<article>`; the clipped child animates.",
+        "owner": null,
+        "why": "A fully clipped element never intersects, so iris/wipe scenes stayed invisible.",
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Information system in the repo: `CLAUDE.md` (core) + `docs/Apply the brief's own findings to the codebase.*",
+        "owner": null,
+        "why": "` (reference) + this log + a skill + a content check. ",
+        "rejected": "Notion/Obsidian connectors — plain files are enough.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Libraries: keep Motion; adopt Bklit charts selectively; port Kokonut ideas; reject anime.js. See `docs/target.md`.",
+        "owner": null,
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "The site is a toolkit, not a stat show: setup audit, self-assessment, experiment log, knowledge base.",
+        "owner": "\"glorified stat show\"; asked for real self-dissection and picked all four functions.",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Light theme only, chosen by contrast math: off-white canvas, near-black ink, Okabe-Ito blue accent, dark vermilion for risk, Okabe orange as second data series.",
+        "owner": null,
+        "why": null,
+        "rejected": "dark theme — user; research favours dark text on light for reading/projecting.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Information architecture: landing hub → one page per topic → tools.",
+        "owner": null,
+        "why": null,
+        "rejected": "one long page; slideshow.",
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Transition types: route changes use View Transitions with types (topic-next/prev, enter-topic, page); sub-scenes use scroll-linked Motion envelopes, entry-only.",
+        "owner": "asked for different transitions for topics vs sub-slides.",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Content de-coupled from presenting: talk material moved to optional `presenting` topic.",
+        "owner": "presentation is undecided.",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Notes became knowledge-base entries (kinds: finding/source/question/note); data migrated, `notes` dropped.",
+        "owner": null,
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Audit analysis runs client-side and is stored as-is. Score = 100·e^(−penalty/75) so messy setups don't floor at 0.",
+        "owner": null,
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "Range knob and toggle redesigned (white knob, hairline, shadow, accent halo). Removed the \"drag the lens\" label.",
+        "owner": "knobs looked ugly.",
+        "why": "User: unnecessary.",
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-03",
+        "text": "`backend/alembic/` renamed `backend/migrations/` (the folder shadowed the library name).",
+        "owner": null,
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-04",
+        "text": "The site is audience material for the talk, not a channel to the owner. Presenter-only topic removed (demo plan + framing → `docs/talk-notes.md`); questions and gaps live in `docs/open-questions.md`.",
+        "owner": "\"Stop treating the website itself as a medium to communicate with me.\"",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-04",
+        "text": "Check established skills/plugins before hand-building. Suggested: frontend-design, Design, code-review, Data.",
+        "owner": "the first question should have been why we weren't using skills that many people use.",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-04",
+        "text": "Installed 12 community skills into the repo via `npx skills add` (run in a node container): frontend-design, web-design-guidelines, vercel-react-best-practices, design-taste-frontend, emil-design-eng, review-animations, improve-animations, tailwind-design-system, webapp-testing, grill-me, improve-codebase-architecture, skill-creator. Removed the CLI's duplicate `agent/skills/` copies (variants for another agent).",
+        "owner": "\"Run them all.\"",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-04",
+        "text": "From the two pasted generator specs: (a) exhibit + (b) port the scrub idea. No third-party (Higgsfield/CloudFront) assets. Hero is now the context scrubber: one 200k window, bloated vs tiered, comparison-slider pattern (clip-path inset, hover/drag/keys, ±4% centre dead zone, one sweep on first view). Lens, flow paths, hero eyebrow, gradient accent word and the widget \"Interactive\" eyebrow removed. Exhibit added to the mistakes topic. Skills used: frontend-design, emil-design-eng, design-taste-frontend.",
+        "owner": "\"Build what you can, don't use those higgsfield assets.\"",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "Versioning: git initialised by the owner (first commit \"Init\"); `.env`, backups and node_modules are not tracked.",
+        "owner": null,
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "Higgsfield: not installing now. Also parked: Paper Shaders, react-three-fiber.",
+        "owner": "\"I don't think I need cool 3D assets to get my point through.\"",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "Direction under review: de-prestige the talk toward zero-setup habits for busy lab members (see open-questions #0).",
+        "owner": null,
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "Added evidence on screen: what \"residue\" is (evidence), Index Sickness stat + \"methods section vs lab notebook\" (memory), SkillReducer stat + \"rubrics, not prompts\" (skills), learning-RCT stat with scope caveat (human cost). Trifecta reframed: it needs an assistant that can act; uploading anonymised data is a privacy/IRB question, not this one.",
+        "owner": "habits lacked premise and mechanism; stats must be on the slides; inferences must be worded as inferences.",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "Stat scenes now require `study` (what the researchers did, plain language) and `meaning` (what it means for the reader); `make check-content` enforces both. Jargon removed from scenes (IFScale, ACE, \"false completed state\", \"lossy compression\", \"boundary condition\"). Talk abstract + yes-man test kit drafted in `docs/talk-notes.md`.",
+        "owner": "\"pushing out stats without clearly explaining what they're for will frustrate people.\"",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "Truncation/compaction evidence added to Evidence: \"Hitting the limit doesn't clean the chat\" (Liu et al., Lost in the Middle) and the compaction stat (Wang et al. 2026, preprint). Product truncation behaviour is labelled \"reported\" (third-party guides only). Sources render as preview cards from publisher og:images fetched once by `make previews` (rejected: hot-linking — CSP and link rot; screenshots — heavier, more copyright exposure). Skills audit: `vercel-react-best-practices` → lazy routes (index 666→305 KB), unused italic font dropped; `web-design-guidelines` → skip link, confirm on deletes, live regions, reduced motion via `MotionConfig`, text-wrap balance/pretty, touch-action; `tailwind-design-system` → radius tokens + one `field` utility (inputs were 10px, now 12px). `improve-animations` findings recorded in open-questions, not yet planned.",
+        "owner": null,
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "Every widget scene carries a guide (what you're looking at · try · the point) and a data badge (study, estimate, your input, diagram, our judgement, from this repository); `make check-content` enforces it. Feeling-vs-stopwatch rebuilt: the measured dot is fixed by design and now says so, \"they felt\" marker added, what-if line, link to a new `speed-check` experiment (`/experiments?template=`); the learning-quiz chart split into its own widget.",
+        "owner": "the diagrams felt decorative; \"shows 19% regardless of how fast the user feels.\"",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "\"9 → 0\" re-checked against the paper: corrections matching Index Sickness, 9 of 45 (sessions 136–214) vs 0 of 20 (253–395); the −56% cut was spec documents, not the rules file. Copy fixed.",
+        "owner": "\"What's 9 → 0 though?\"",
+        "why": null,
+        "rejected": null,
+        "reverted": false
+      },
+      {
+        "date": "2026-10-05",
+        "text": "Topic 11 \"How this site was built\": the AI's files and the code layers, the decision log, honest tool status, what was built on a whim. Numbers come from the repo via `make facts` (`scripts/build-facts.ts` → `content/build-facts.json`). Home topic grid replaced by a site map (5 groups × topics × scene classes × tools); every topic opens with an outline. Yes-man run 1 added to memory.",
+        "owner": "present how the app was built; navigate with meta-diagrams; be honest that the tools have no users and some parts were whims.",
+        "why": null,
+        "rejected": "hand-typed counts — they go stale.",
+        "reverted": false
+      }
+    ]
+  },
+  "skills": [
+    {
+      "name": "add-scene",
+      "description": "Add or edit a scene (statement, stat, compare, list, widget) in the AI Workflow Habits website, or turn new brief text into scenes.",
+      "source": "written for this project"
+    },
+    {
+      "name": "design-taste-frontend",
+      "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns.",
+      "source": "leonxlnx/taste-skill"
+    },
+    {
+      "name": "emil-design-eng",
+      "description": "This skill encodes Emil Kowalski's philosophy on UI polish, component design, animation decisions, and the invisible details that make software feel great.",
+      "source": "emilkowalski/skills"
+    },
+    {
+      "name": "frontend-design",
+      "description": "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one.",
+      "source": "anthropics/skills"
+    },
+    {
+      "name": "grill-me",
+      "description": "A relentless interview to sharpen a plan or design.",
+      "source": "mattpocock/skills"
+    },
+    {
+      "name": "improve-animations",
+      "description": "Survey a codebase's animation and motion code as a senior motion advisor, then produce a prioritized audit and self-contained implementation plans for other agents (or cheaper models) to execute.",
+      "source": "emilkowalski/skills"
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "description": "Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.",
+      "source": "mattpocock/skills"
+    },
+    {
+      "name": "review-animations",
+      "description": "Reviews animation and motion code against a high craft bar derived from Emil Kowalski's design engineering philosophy.",
+      "source": "emilkowalski/skills"
+    },
+    {
+      "name": "skill-creator",
+      "description": "Create new skills, modify and improve existing skills, and measure skill performance.",
+      "source": "anthropics/skills"
+    },
+    {
+      "name": "tailwind-design-system",
+      "description": "Build scalable design systems with Tailwind CSS v4, design tokens, component libraries, and responsive patterns.",
+      "source": "wshobson/agents"
+    },
+    {
+      "name": "vercel-react-best-practices",
+      "description": "React and Next.js performance optimization guidelines from Vercel Engineering.",
+      "source": "vercel-labs/agent-skills"
+    },
+    {
+      "name": "web-design-guidelines",
+      "description": "Review UI code for Web Interface Guidelines compliance.",
+      "source": "vercel-labs/agent-skills"
+    },
+    {
+      "name": "webapp-testing",
+      "description": "Toolkit for interacting with and testing local web applications using Playwright.",
+      "source": "anthropics/skills"
+    }
+  ],
+  "checks": [
+    {
+      "name": "make lint",
+      "what": "ESLint + tsc (frontend) and Ruff (backend) on your current files, inside containers"
+    },
+    {
+      "name": "make check-content",
+      "what": "Enforce copy limits on the brief (docs/content.md)"
+    },
+    {
+      "name": "make facts",
+      "what": "Re-read CLAUDE.md, docs/, the decision log and skills → content/build-facts.json (topic 11)"
+    },
+    {
+      "name": "make previews",
+      "what": "Fetch link-preview images for every cited source → frontend/public/previews + content/previews.json"
+    },
+    {
+      "name": "make backup",
+      "what": "Dump the whole database to ./backups/<timestamp>.sql"
+    }
+  ],
+  "code": {
+    "content": [
+      "assessment.ts",
+      "brief.ts",
+      "data.ts",
+      "deck.ts",
+      "exhibits.ts",
+      "experiments.ts",
+      "outline.ts",
+      "tools.ts"
+    ],
+    "pages": [
+      "assess",
+      "audit",
+      "experiments",
+      "home",
+      "kb",
+      "topic",
+      "widgets"
+    ],
+    "widgets": 16,
+    "api": [
+      "assessments",
+      "audit",
+      "board",
+      "checklist",
+      "entries",
+      "experiments",
+      "setup_audits"
+    ],
+    "tables": [
+      "assessments",
+      "audit_responses",
+      "board_pins",
+      "checklist_items",
+      "entries",
+      "experiments",
+      "experiment_runs",
+      "setup_audits"
+    ]
+  }
+}

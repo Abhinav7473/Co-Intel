@@ -108,7 +108,7 @@ export function AssessPage() {
                     <span className="text-[12px] text-mute">{when.format(new Date(a.created_at))}</span>
                   </span>
                   {delta !== null ? <span className={cn("font-mono text-[13px]", delta >= 0 ? "text-accent" : "text-warn")}>{delta >= 0 ? `+${delta}` : delta}</span> : null}
-                  <button type="button" aria-label="Delete result" onClick={() => del.mutate(a.id)} className="rounded-[8px] p-1.5 text-mute opacity-0 transition hover:text-warn group-hover:opacity-100">
+                  <button type="button" aria-label="Delete result" onClick={() => window.confirm("Delete this result? This can\u2019t be undone.") && del.mutate(a.id)} className="rounded-[8px] p-1.5 text-mute opacity-0 transition hover:text-warn group-hover:opacity-100">
                     <Trash2 className="size-3.5" />
                   </button>
                 </li>

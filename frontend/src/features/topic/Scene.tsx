@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
-import { ArrowUpRight, ChevronDown, Plus } from "lucide-react";
-import { AnimatePresence, motion, useScroll, useTransform, type MotionStyle, type MotionValue } from "motion/react";
-import type { Line, Slide, Transition } from "@/content/types";
+import { ChevronDown, Plus } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform, type MotionStyle, type MotionValue } from "motion/react";
+import { DATA_KINDS } from "@/content/outline";
+import type { Line, Slide, Transition, WidgetGuide } from "@/content/types";
 import { WIDGETS } from "@/features/widgets";
 import { Panel } from "@/ui/Panel";
+import { SourceCards } from "@/ui/SourceCards";
 import { cn } from "@/utils/cn";
 import { renderInline } from "@/utils/inline";
 import { ITEM, STAGGER_PARENT } from "./reveal";
@@ -16,16 +18,28 @@ import { ITEM, STAGGER_PARENT } from "./reveal";
  *    with the scroll position in both directions, with a different shape per kind.
  * 2. The content inside staggers in once (lines, columns) when it first enters.
  */
+/** Scenes already scrolled to from a #hash link, so a re-render never jumps the reader back. */
+const jumped = new WeakSet<HTMLElement>();
+
 export function Scene({ slide }: { slide: Slide }) {
   const ref = useRef<HTMLElement>(null);
+  // Site-map and outline links carry #scene-id. The router's hash scroll can run before
+  // the scene exists, so the scene brings itself into view once, when it mounts.
+  const attach = (el: HTMLElement | null) => {
+    ref.current = el;
+    if (!el || jumped.has(el) || window.location.hash !== `#${slide.id}`) return;
+    jumped.add(el);
+    requestAnimationFrame(() => el.scrollIntoView({ block: "start" }));
+  };
   // 0 when the scene's top enters the viewport, 1 when it reaches 40% from the top.
   // Entry only: content you are reading never fades or drifts on its way out.
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "start 0.4"] });
-  const style = useEnvelope(slide.transition ?? "rise", scrollYProgress);
+  const envelope = useEnvelope(slide.transition ?? "rise", scrollYProgress);
+  const style = useReducedMotion() ? undefined : envelope;
 
   return (
     <motion.article
-      ref={ref}
+      ref={attach}
       id={slide.id}
       initial="hidden"
       whileInView="shown"
@@ -69,17 +83,19 @@ function SceneBody({ slide }: { slide: Slide }) {
     case "stat":
       return (
         <>
+          {/* study → number → what it counts → what it means: never a bare number */}
+          <motion.p variants={ITEM} className="mb-6 max-w-2xl text-lg leading-relaxed text-ink/70">
+            {slide.study}
+          </motion.p>
           <motion.div variants={ITEM} className="text-gradient font-display text-[clamp(4rem,10vw,8.5rem)] font-semibold leading-[0.9] tracking-[-0.04em]">
             {slide.value}
           </motion.div>
-          <motion.p variants={ITEM} className="mt-6 max-w-3xl text-[clamp(1.25rem,2.2vw,1.8rem)] font-light leading-snug">
+          <motion.p variants={ITEM} className="mt-4 max-w-3xl text-[clamp(1.2rem,2vw,1.6rem)] leading-snug">
             {slide.label}
           </motion.p>
-          {slide.line ? (
-            <motion.p variants={ITEM} className="mt-3 max-w-2xl text-lg text-mute">
-              {slide.line}
-            </motion.p>
-          ) : null}
+          <motion.p variants={ITEM} className="mt-5 max-w-2xl border-l-2 border-accent pl-4 text-lg leading-relaxed">
+            {slide.meaning}
+          </motion.p>
           <motion.div variants={ITEM} className="mt-8 flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.14em] text-mute">
             <span className="h-px w-10 bg-accent" />
             {slide.source}
@@ -92,7 +108,7 @@ function SceneBody({ slide }: { slide: Slide }) {
           {slide.heading ? <Heading small>{slide.heading}</Heading> : null}
           <div className={cn("mt-10 grid gap-4", slide.columns.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2")}>
             {slide.columns.map((c) => (
-              <motion.div key={c.title} variants={ITEM} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300, damping: 24 }}>
+              <motion.div key={c.title} variants={ITEM}>
                 <Panel className={cn("h-full p-7", c.emphasis && "border-accent/50 ring-1 ring-accent/30")}>
                   <div className={cn("mb-5 h-0.5 w-10 rounded-full", c.emphasis ? "bg-accent" : "bg-ink/20")} />
                   <h3 className="font-display text-3xl tracking-tight">{c.title}</h3>
@@ -119,14 +135,45 @@ function SceneBody({ slide }: { slide: Slide }) {
     case "widget": {
       const Widget = WIDGETS[slide.widget];
       return (
-        <motion.div variants={ITEM}>
-          <Widget />
-        </motion.div>
+        <>
+          <Guide guide={slide.guide} />
+          <motion.div variants={ITEM}>
+            <Widget />
+          </motion.div>
+        </>
       );
     }
     default:
       return null; // title / chapter / end are rendered by the pages themselves
   }
+}
+
+/** Read-me above every widget: what it shows, what to do, why it matters, and where its numbers come from. */
+function Guide({ guide }: { guide: WidgetGuide }) {
+  const rows = [
+    ["What you're looking at", guide.shows],
+    ["Try", guide.try],
+    ["The point", guide.point],
+  ] as const;
+  return (
+    <motion.div variants={ITEM} className="mb-6">
+      <dl className="grid gap-x-6 gap-y-4 md:grid-cols-3">
+        {rows.map(([k, v], i) => (
+          <div key={k} className={cn("border-t-2 pt-3", i === 2 ? "border-accent" : "border-line")}>
+            <dt className={cn("mb-1 font-mono text-[11px] uppercase tracking-[0.12em]", i === 2 ? "text-accent" : "text-mute")}>{k}</dt>
+            <dd className={cn("text-[15px] leading-relaxed", i === 2 ? "text-ink" : "text-ink/80")}>{v}</dd>
+          </div>
+        ))}
+      </dl>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {guide.data.map((d) => (
+          <span key={d} className="rounded-full bg-sunken px-3 py-1 text-[12.5px] text-ink/80">
+            <span className="font-medium text-ink">{DATA_KINDS[d].label}</span> · {DATA_KINDS[d].means}
+          </span>
+        ))}
+      </div>
+    </motion.div>
+  );
 }
 
 function Heading({ children, small }: { children: string; small?: boolean }) {
@@ -215,20 +262,9 @@ function Details({ slide }: { slide: Slide }) {
                 </p>
               ))}
               {slide.sources?.length ? (
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {slide.sources.map((s) => (
-                    <li key={s.href}>
-                      <a
-                        href={s.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-[10px] border border-line bg-surface px-2.5 py-1 text-[12.5px] text-mute transition hover:border-accent/50 hover:text-ink"
-                      >
-                        {s.label} <ArrowUpRight className="size-3" />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-4">
+                  <SourceCards sources={slide.sources} compact />
+                </div>
               ) : null}
             </div>
           </motion.div>

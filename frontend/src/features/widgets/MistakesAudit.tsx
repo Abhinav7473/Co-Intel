@@ -96,7 +96,7 @@ export function MistakesAudit() {
           );
         })}
       </ol>
-      {submit.isError ? <p className="mt-3 text-[12.5px] text-warn">{submit.error.message}</p> : null}
+      {submit.isError ? <p role="status" aria-live="polite" className="mt-3 text-[12.5px] text-warn">{submit.error.message}</p> : null}
     </WidgetFrame>
   );
 }

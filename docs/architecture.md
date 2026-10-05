@@ -25,9 +25,16 @@ View Transitions API with types (see `docs/design.md`).
 | `features/<page>/` | One folder per route group; pure logic next to it (`audit/analyze.ts`, `experiments/compare.ts`) |
 | `features/widgets/` | Interactive explainers used inside topic scenes, registered by id |
 | `shell/` | `AppShell` (backdrop, top bar, `Page` frame), `TopBar`, `layout.ts` |
-| `ui/` | Shared primitives: `LiquidGlass`, `Panel`, `Button`, `Segmented`, `Toggle`, `Slider`, `Spotlight`, `FlowPaths`, `charts/` |
+| `ui/` | Shared primitives: `LiquidGlass`, `Panel`, `Button`, `Segmented`, `Toggle`, `Slider`, `Spotlight`, `FlowPaths`, `SourceCards`, `charts/` |
 | `hooks/` | Query hooks per resource + `useElementSize` |
 | `api/` | `client.ts`, `queries.ts`, `types.ts` (mirror of backend schemas) |
+
+Topic 11 reads `content/build-facts.json`, produced by `make facts` (`scripts/build-facts.ts` reads the repo root read-only);
+rerun after editing CLAUDE.md, docs/ or the decision log. `/experiments?template=<key>` opens a template's form.
+
+Every page is a lazy route chunk (`lazyRouteComponent`). Source preview cards read `content/previews.json` + images in
+`public/previews/`, both produced by `make previews` (`scripts/fetch-previews.ts`, open-graph-scraper; rerun after adding
+sources — no network at build or runtime).
 
 The setup audit runs entirely in the browser (`audit/analyze.ts`); the API stores input + report.
 

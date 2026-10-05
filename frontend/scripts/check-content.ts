@@ -25,8 +25,25 @@ for (const s of SLIDES) {
       if (l.more && len(l.more) > LIMITS.more) fail(s.id, `more ${len(l.more)} > ${LIMITS.more} chars`);
     }
   }
+  if (s.kind === "widget") {
+    const g = s.guide;
+    if (!g?.name.trim() || !g.shows.trim() || !g.try.trim() || !g.point.trim()) fail(s.id, "widget without a full guide (name, shows, try, point)");
+    else {
+      if (len(g.name) > 40) fail(s.id, `guide name ${len(g.name)} > 40 chars`);
+      for (const k of ["shows", "try", "point"] as const) if (len(g[k]) > 170) fail(s.id, `guide ${k} ${len(g[k])} > 170 chars`);
+      if (!g.data.length) fail(s.id, "guide must say where its numbers come from (data)");
+    }
+  }
+  if (s.kind === "compare") for (const c of s.columns) for (const l of c.lines) if (len(l) > LIMITS.line) fail(s.id, `column line > ${LIMITS.line} chars`);
   if (s.kind === "compare" && s.columns.length > LIMITS.columns) fail(s.id, `${s.columns.length} columns > ${LIMITS.columns}`);
-  if (s.kind === "stat" && !s.source.trim()) fail(s.id, "stat without a source");
+  if (s.kind === "stat") {
+    if (!s.source.trim()) fail(s.id, "stat without a source");
+    if (!s.study.trim()) fail(s.id, "stat without a plain-language description of the study");
+    if (!s.meaning.trim()) fail(s.id, "stat without a 'what it means' line");
+    if (len(s.study) > 160) fail(s.id, `study ${len(s.study)} > 160 chars`);
+    if (len(s.label) > 90) fail(s.id, `label ${len(s.label)} > 90 chars`);
+    if (len(s.meaning) > 140) fail(s.id, `meaning ${len(s.meaning)} > 140 chars`);
+  }
 }
 
 for (const sec of SECTIONS) {

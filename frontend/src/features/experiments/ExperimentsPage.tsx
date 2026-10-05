@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { getRouteApi, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, FlaskConical } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { SECTION_BY_SLUG } from "@/content/brief";
@@ -10,11 +10,13 @@ import { Button } from "@/ui/Button";
 import { Panel } from "@/ui/Panel";
 import { Spotlight } from "@/ui/Spotlight";
 
-const input = "w-full rounded-[10px] border border-line bg-surface px-3 py-2 text-[14px] outline-none focus:border-accent focus:ring-4 focus:ring-accent/10";
+
+const route = getRouteApi("/experiments");
 
 export function ExperimentsPage() {
   const { data: experiments = [] } = useExperiments();
-  const [picked, setPicked] = useState<Template | null>(null);
+  const { template } = route.useSearch();
+  const [picked, setPicked] = useState<Template | null>(() => TEMPLATES.find((t) => t.key === template) ?? null);
 
   return (
     <Page
@@ -90,19 +92,19 @@ function CreateForm({ template, onCancel }: { template: Template; onCancel: () =
         >
           <label className="md:col-span-2">
             <span className="mb-1 block text-[13px] text-mute">Title</span>
-            <input className={input} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} required />
+            <input className="field" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} required />
           </label>
           <label className="md:col-span-2">
             <span className="mb-1 block text-[13px] text-mute">Hypothesis</span>
-            <textarea className={`${input} min-h-20`} value={hypothesis} onChange={(e) => setHypothesis(e.target.value)} maxLength={2000} />
+            <textarea className="field min-h-20" value={hypothesis} onChange={(e) => setHypothesis(e.target.value)} maxLength={2000} />
           </label>
           <label>
             <span className="mb-1 block text-[13px] text-mute">Variant A</span>
-            <input className={input} value={a} onChange={(e) => setA(e.target.value)} maxLength={60} required />
+            <input className="field" value={a} onChange={(e) => setA(e.target.value)} maxLength={60} required />
           </label>
           <label>
             <span className="mb-1 block text-[13px] text-mute">Variant B</span>
-            <input className={input} value={b} onChange={(e) => setB(e.target.value)} maxLength={60} required />
+            <input className="field" value={b} onChange={(e) => setB(e.target.value)} maxLength={60} required />
           </label>
           <div className="flex justify-end gap-2 md:col-span-2">
             <Button tone="ghost" onClick={onCancel}>
@@ -112,7 +114,7 @@ function CreateForm({ template, onCancel }: { template: Template; onCancel: () =
               Create experiment
             </Button>
           </div>
-          {create.isError ? <p className="text-[12.5px] text-warn md:col-span-2">{create.error.message}</p> : null}
+          {create.isError ? <p role="status" aria-live="polite" className="text-[12.5px] text-warn md:col-span-2">{create.error.message}</p> : null}
         </form>
       </Panel>
     </motion.div>

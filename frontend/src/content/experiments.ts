@@ -78,6 +78,22 @@ export const TEMPLATES: Template[] = [
     qualityMeans: "Task success",
   },
   {
+    key: "speed-check",
+    title: "Am I actually faster with AI?",
+    topic: "human-cost",
+    hypothesis: "AI makes me faster on my own tasks — by about as much as it feels like.",
+    a: "Without AI",
+    b: "With AI",
+    metrics: ["minutes", "quality"],
+    protocol: [
+      "Before you start, write down how much faster you think AI makes you.",
+      "List 6 similar tasks from your real work. Flip a coin for each: with or without AI.",
+      "Time each one from start to done-and-checked, not to first draft.",
+      "Compare the average times with your guess.",
+    ],
+    qualityMeans: "How much rework the result needed",
+  },
+  {
     key: "explain-vs-delegate",
     title: "Delegate vs ask for explanations",
     topic: "human-cost",

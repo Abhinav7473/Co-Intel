@@ -6,7 +6,7 @@ PROD := $(COMPOSE) --profile prod
 STAMP := $(shell date +%Y%m%d-%H%M%S)
 
 .DEFAULT_GOAL := help
-.PHONY: help dev prod down logs ps psql migrate revision backup restore lint fmt check-content nuke
+.PHONY: help dev prod down logs ps psql migrate revision backup restore lint fmt check-content previews facts nuke
 
 help: ## Show targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
@@ -53,6 +53,12 @@ NODE := $(DEV) run --rm --no-deps -T -v ./frontend/src:/app/src -v ./frontend/sc
 
 check-content: ## Enforce copy limits on the brief (docs/content.md)
 	$(NODE) node scripts/check-content.ts
+
+facts: ## Re-read CLAUDE.md, docs/, the decision log and skills → content/build-facts.json (topic 11)
+	$(DEV) run --rm --no-deps -T -v .:/repo:ro -v ./frontend/src:/app/src -v ./frontend/scripts:/app/scripts -e REPO=/repo web-dev node scripts/build-facts.ts
+
+previews: ## Fetch link-preview images for every cited source → frontend/public/previews + content/previews.json
+	$(DEV) run --rm --no-deps -T -v ./frontend/src:/app/src -v ./frontend/scripts:/app/scripts -v ./frontend/public:/app/public web-dev node scripts/fetch-previews.ts
 
 lint: ## ESLint + tsc (frontend) and Ruff (backend) on your current files, inside containers
 	$(NODE) npx eslint .

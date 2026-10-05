@@ -116,6 +116,8 @@ export const SOURCES: { group: string; links: SourceLink[] }[] = [
       { label: "Summary of AGENTS.md v1 vs v2 results", href: "https://gethrbr.com/blog/is-agents-md-useful" },
       { label: "Gao et al. SkillReducer (2026)", href: "https://arxiv.org/abs/2603.29919" },
       { label: "Zhang and Song. Index Sickness, 391 sessions (2026)", href: "https://arxiv.org/abs/2606.19121" },
+      { label: "Liu et al. Lost in the Middle: How Language Models Use Long Contexts (TACL 2023)", href: "https://arxiv.org/abs/2307.03172" },
+      { label: "Wang et al. Lost in Compaction: Side-Constraint Loss under Context Compaction (2026, preprint)", href: "https://arxiv.org/abs/2608.11242" },
       { label: "Zhang et al. Agentic Context Engineering (ICLR 2026)", href: "https://arxiv.org/pdf/2510.04618" },
       { label: "Vasilopoulos. Codified Context (2026)", href: "https://arxiv.org/abs/2602.20478" },
       { label: "Jain et al. Interaction Context Often Increases Sycophancy in LLMs (CHI 2026)", href: "https://dl.acm.org/doi/10.1145/3772318.3791915" },

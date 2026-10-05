@@ -5,7 +5,6 @@ import { Button } from "@/ui/Button";
 import { Segmented } from "@/ui/Segmented";
 import { KINDS } from "./kinds";
 
-const field = "w-full rounded-[12px] border border-line bg-surface px-3.5 py-2.5 text-[15px] outline-none transition placeholder:text-mute/70 focus:border-accent focus:ring-4 focus:ring-accent/10";
 
 /** Create or edit an entry. Topic is fixed when embedded in a topic page. */
 export function EntryForm({
@@ -52,9 +51,9 @@ export function EntryForm({
           </select>
         )}
       </div>
-      <input className={field} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={160} placeholder="Title (optional)" />
+      <input className="field" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={160} placeholder="Title, e.g. Tiered memory cut my corrections…" />
       <textarea
-        className={`${field} min-h-28 resize-y leading-relaxed`}
+        className="field min-h-28 resize-y leading-relaxed"
         value={body}
         onChange={(e) => setBody(e.target.value)}
         maxLength={10_000}
@@ -63,7 +62,7 @@ export function EntryForm({
           if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) e.currentTarget.form?.requestSubmit();
         }}
       />
-      {kind === "source" ? <input className={field} value={url} onChange={(e) => setUrl(e.target.value)} type="url" placeholder="https://…" /> : null}
+      {kind === "source" ? <input className="field" value={url} onChange={(e) => setUrl(e.target.value)} type="url" placeholder="https://…" /> : null}
       <div className="flex items-center justify-between gap-3">
         <span className="text-[12px] text-mute">{error ?? "⌘↵ to save"}</span>
         <div className="flex gap-2">

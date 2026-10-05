@@ -8,10 +8,13 @@ import { TopBar } from "./TopBar";
 export function AppShell() {
   return (
     <>
+      <a href="#content" className="sr-only z-50 rounded-[10px] bg-ink px-4 py-2 text-canvas focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+        Skip to content
+      </a>
       <Backdrop />
       <TopBar />
       {/* named so view transitions can animate page content separately from the bar */}
-      <div style={{ viewTransitionName: "main" }}>
+      <div id="content" tabIndex={-1} className="outline-none" style={{ viewTransitionName: "main" }}>
         <Outlet />
       </div>
     </>

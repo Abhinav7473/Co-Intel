@@ -1,0 +1,139 @@
+{
+  "https://agentpatterns.ai/patterns/agent-design/anthropic-effective-agents-framework/": {
+    "site": "AgentPatterns.ai",
+    "title": "Anthropic's Effective Agents Framework: A Pattern Map — AgentPatterns.ai"
+  },
+  "https://aithinkerlab.com/best-local-llm-models-privacy-dev/": {
+    "site": "AIThinkerLab",
+    "title": "5 Best Local LLM Models for Private Dev [2026 Tested]",
+    "image": "/previews/deeabbe6ecd8.png"
+  },
+  "https://app.stationx.net/articles/reduce-claude-code-token-usage": {
+    "site": "StationX",
+    "title": "Reduce Claude Code Token Usage: 8 Proven Ways (2026)",
+    "image": "/previews/b61df0122f8e.jpg"
+  },
+  "https://arxiv.org/abs/2307.03172": {
+    "site": "arXiv.org",
+    "title": "Lost in the Middle: How Language Models Use Long Contexts"
+  },
+  "https://arxiv.org/abs/2602.11988": {
+    "site": "arXiv.org",
+    "title": "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?"
+  },
+  "https://arxiv.org/abs/2602.20478": {
+    "site": "arXiv.org",
+    "title": "Codified Context: Infrastructure for AI Agents in a Complex Codebase"
+  },
+  "https://arxiv.org/abs/2603.29919": {
+    "site": "arXiv.org",
+    "title": "SkillReducer: Optimizing LLM Agent Skills for Token Efficiency"
+  },
+  "https://arxiv.org/abs/2606.19121": {
+    "site": "arXiv.org",
+    "title": "Written by AI, Managed by AI: Semantic Space Control and Index Sickness Elimination Across 391 Consecutive Sessions"
+  },
+  "https://arxiv.org/abs/2608.11242": {
+    "site": "arXiv.org",
+    "title": "Lost in Compaction: Evaluating Side-Constraint Loss under Context Compaction"
+  },
+  "https://arxiv.org/pdf/2507.11538": {
+    "site": "arxiv.org"
+  },
+  "https://arxiv.org/pdf/2510.04618": {
+    "site": "arxiv.org"
+  },
+  "https://dl.acm.org/doi/10.1145/3772318.3791915": {
+    "site": "dl.acm.org"
+  },
+  "https://freeacademy.ai/blog/local-llms-vs-cloud-llms-ollama-privacy-comparison-2026": {
+    "site": "freeacademy.ai"
+  },
+  "https://gethrbr.com/blog/is-agents-md-useful": {
+    "site": "Harbor",
+    "title": "Is AGENTS.md useful? What the research found · Harbor",
+    "image": "/previews/03af536c4c09.png"
+  },
+  "https://github.com/devskale/skale-skills/blob/main/docs/agent-skills-best-practices.md": {
+    "site": "GitHub",
+    "title": "skale-skills/docs/agent-skills-best-practices.md at main · devskale/skale-skills"
+  },
+  "https://github.com/pewdiepie-archdaemon/odysseus": {
+    "site": "GitHub",
+    "title": "GitHub - odysseus-dev/odysseus: Self-hosted AI workspace.",
+    "image": "/previews/2873c622cddf.png"
+  },
+  "https://inference.sh/blog/skills/agent-skills-overview": {
+    "site": "inference shell",
+    "title": "Agent Skills: The Open Standard for AI Capabilities | inference shell",
+    "image": "/previews/64cd64f07475.png"
+  },
+  "https://particula.tech/blog/code-execution-mcp-token-reduction-pattern": {
+    "site": "particula.tech",
+    "title": "Code Execution With MCP: Cut Tool Tokens up to 98%",
+    "image": "/previews/02a4980a90a4.webp"
+  },
+  "https://scienceblog.com/t-a-randomized-trial-by-metr-found-that-experienced-developers-completed-real-coding-tasks-19-slower-when-allowed-to-use-ai-tools-yet-afterwards-they-estimated-on-average-that-ai-had-made-them-20-fast/": {
+    "site": "ScienceBlog.com",
+    "title": "A randomized trial by METR found that experienced developers completed real coding tasks 19% slower when allowed to use AI tools — yet afterwards, they estimated on average that AI had made them 20% faster.",
+    "image": "/previews/e266af17b650.jpg"
+  },
+  "https://simonwillison.net/2025/Aug/9/bay-area-ai/": {
+    "site": "Simon Willison’s Weblog",
+    "title": "My Lethal Trifecta talk at the Bay Area AI Security Meetup",
+    "image": "/previews/1b1e0a493829.jpg"
+  },
+  "https://tech-insider.org/pewdiepie-ajax-ai-model-openai-bans-2026/": {
+    "site": "Tech Insider",
+    "title": "PewDiePie Ajax AI Model: 9B Params, OpenAI Bans [2026]",
+    "image": "/previews/7982932a69a9.webp"
+  },
+  "https://waleedk.medium.com/the-evolution-of-ai-tool-use-mcp-went-sideways-8ef4b1268126": {
+    "site": "waleedk.medium.com"
+  },
+  "https://writer.com/engineering/personalized-context-degrades-ai-accuracy/": {
+    "site": "WRITER",
+    "title": "How personalized context quietly degrades AI accuracy: a deeper look",
+    "image": "/previews/790ba6389114.png"
+  },
+  "https://www.aakashx.com/blog/how-to-cut-claude-code-cost/": {
+    "site": "aakashx",
+    "title": "How to Cut Your Claude Code Cost (and Codex Cost, and Cursor Cost) Without Slowing Down | aakashx",
+    "image": "/previews/6553b41620b1.webp"
+  },
+  "https://www.anthropic.com/engineering/building-effective-agents": {
+    "site": "anthropic.com",
+    "title": "Building Effective AI Agents",
+    "image": "/previews/7d24e5faa28b.png"
+  },
+  "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents": {
+    "site": "anthropic.com",
+    "title": "Effective context engineering for AI agents",
+    "image": "/previews/42516bb95051.png"
+  },
+  "https://www.anthropic.com/research/AI-assistance-coding-skills": {
+    "site": "anthropic.com",
+    "title": "How AI assistance impacts the formation of coding skills",
+    "image": "/previews/2d8501b9554a.jpg"
+  },
+  "https://www.buildthisnow.com/blog/guide/development/claude-code-prompt-caching": {
+    "site": "buildthisnow.com",
+    "title": "Claude Code Prompt Caching",
+    "image": "/previews/52980467549b.png"
+  },
+  "https://www.fileuploadgpt.com/blog/chatgpt-context-window-full": {
+    "site": "FileUploadGPT",
+    "title": "What happens when ChatGPT's context window is full? No warning",
+    "image": "/previews/50c67100809f.png"
+  },
+  "https://www.trychroma.com/research/context-rot": {
+    "site": "trychroma.com",
+    "title": "Context Rot: How Increasing Input Tokens Impacts LLM Performance",
+    "image": "/previews/78cc2112e633.png"
+  },
+  "https://www.xda-developers.com/tried-pewdiepie-open-source-ai-workspace-odysseus-weirdly-great/": {
+    "site": "XDA",
+    "title": "I tried PewDiePie's open-source AI workspace, and it's weirdly great",
+    "image": "/previews/4e70b3b8c5a6.jpg"
+  }
+}

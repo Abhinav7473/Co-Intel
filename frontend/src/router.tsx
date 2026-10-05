@@ -1,15 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { createRootRouteWithContext, createRoute, createRouter, notFound } from "@tanstack/react-router";
+import { createRootRouteWithContext, createRoute, createRouter, lazyRouteComponent, notFound } from "@tanstack/react-router";
 import { queries } from "@/api/queries";
 import { SECTION_BY_SLUG, SECTIONS } from "@/content/brief";
-import { AssessPage } from "@/features/assess/AssessPage";
-import { AuditDetailPage } from "@/features/audit/AuditDetailPage";
-import { AuditPage } from "@/features/audit/AuditPage";
-import { ExperimentPage } from "@/features/experiments/ExperimentPage";
-import { ExperimentsPage } from "@/features/experiments/ExperimentsPage";
-import { HomePage } from "@/features/home/HomePage";
-import { KnowledgePage } from "@/features/kb/KnowledgePage";
-import { TopicPage } from "@/features/topic/TopicPage";
 import { AppShell, NotFound } from "@/shell/AppShell";
 
 interface RouterContext {
@@ -22,6 +14,7 @@ const rootRoute = createRootRouteWithContext<RouterContext>()({
 });
 
 // Data is fetched by route loaders before render: the no-useEffect way.
+// Each page is its own chunk (lazyRouteComponent), so the first visit loads only what it shows.
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
@@ -32,7 +25,7 @@ const homeRoute = createRoute({
       qc.ensureQueryData(queries.assessments()),
       qc.ensureQueryData(queries.experiments()),
     ]),
-  component: HomePage,
+  component: lazyRouteComponent(() => import("@/features/home/HomePage"), "HomePage"),
 });
 
 const topicRoute = createRoute({
@@ -47,14 +40,14 @@ const topicRoute = createRoute({
       qc.ensureQueryData(queries.poll()),
     ]);
   },
-  component: TopicPage,
+  component: lazyRouteComponent(() => import("@/features/topic/TopicPage"), "TopicPage"),
 });
 
 const auditRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/audit",
   loader: ({ context: { queryClient: qc } }) => qc.ensureQueryData(queries.setupAudits()),
-  component: AuditPage,
+  component: lazyRouteComponent(() => import("@/features/audit/AuditPage"), "AuditPage"),
 });
 
 const auditDetailRoute = createRoute({
@@ -62,28 +55,30 @@ const auditDetailRoute = createRoute({
   path: "/audit/$id",
   loader: ({ params, context: { queryClient: qc } }) =>
     Promise.all([qc.ensureQueryData(queries.setupAudit(params.id)), qc.ensureQueryData(queries.setupAudits())]),
-  component: AuditDetailPage,
+  component: lazyRouteComponent(() => import("@/features/audit/AuditDetailPage"), "AuditDetailPage"),
 });
 
 const assessRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/assess",
   loader: ({ context: { queryClient: qc } }) => qc.ensureQueryData(queries.assessments()),
-  component: AssessPage,
+  component: lazyRouteComponent(() => import("@/features/assess/AssessPage"), "AssessPage"),
 });
 
 const experimentsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/experiments",
+  // ?template=<key> opens that template's form (links from topic widgets)
+  validateSearch: (s: Record<string, unknown>): { template?: string } => (typeof s.template === "string" ? { template: s.template } : {}),
   loader: ({ context: { queryClient: qc } }) => qc.ensureQueryData(queries.experiments()),
-  component: ExperimentsPage,
+  component: lazyRouteComponent(() => import("@/features/experiments/ExperimentsPage"), "ExperimentsPage"),
 });
 
 const experimentRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/experiments/$id",
   loader: ({ params, context: { queryClient: qc } }) => qc.ensureQueryData(queries.experiment(params.id)),
-  component: ExperimentPage,
+  component: lazyRouteComponent(() => import("@/features/experiments/ExperimentPage"), "ExperimentPage"),
 });
 
 interface KbSearch {
@@ -96,7 +91,7 @@ const kbRoute = createRoute({
   validateSearch: (s: Record<string, unknown>): KbSearch =>
     typeof s.topic === "string" && SECTION_BY_SLUG[s.topic] ? { topic: s.topic } : {},
   loader: ({ context: { queryClient: qc } }) => qc.ensureQueryData(queries.entries()),
-  component: KnowledgePage,
+  component: lazyRouteComponent(() => import("@/features/kb/KnowledgePage"), "KnowledgePage"),
 });
 
 const routeTree = rootRoute.addChildren([

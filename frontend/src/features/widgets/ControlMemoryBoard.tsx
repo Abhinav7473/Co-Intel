@@ -74,7 +74,7 @@ export function ControlMemoryBoard() {
       title="Place every tool on the axis"
       hint="Drag the lenses (or focus one and use arrow keys). Positions are saved."
       actions={
-        <Button size="sm" tone="ghost" icon={<RotateCcw className="size-3.5" />} onClick={() => reset.mutate()}>
+        <Button size="sm" tone="ghost" icon={<RotateCcw className="size-3.5" />} onClick={() => window.confirm("Reset every tool to its starting position?") && reset.mutate()}>
           Reset
         </Button>
       }
@@ -168,13 +168,13 @@ export function ControlMemoryBoard() {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           maxLength={48}
-          placeholder="Add a tool (e.g. Cursor)"
+          placeholder="Add a tool, e.g. Cursor…"
           className="h-10 min-w-0 flex-1 rounded-full border border-line bg-surface px-4 text-sm outline-none placeholder:text-mute/60 focus:border-accent/50"
         />
         <Button type="submit" size="sm" icon={<Plus className="size-3.5" />} disabled={!slugify(draft)}>
           Add
         </Button>
-        {save.isError ? <span className="text-[12px] text-warn">{save.error.message}</span> : null}
+        {save.isError ? <span role="status" aria-live="polite" className="text-[12px] text-warn">{save.error.message}</span> : null}
       </form>
     </WidgetFrame>
   );
