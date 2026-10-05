@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react";
+
 export type WidgetId =
   | "control-memory-board"
   | "evidence-deck"
@@ -14,7 +16,8 @@ export type WidgetId =
   | "spec-exhibit"
   | "learning-quiz"
   | "info-system"
-  | "decision-log";
+  | "decision-log"
+  | "script-exhibit";
 
 export type ToolId = "audit" | "assess" | "experiments" | "kb";
 
@@ -27,11 +30,25 @@ export interface Section {
   kicker: string;
   /** tools that put this topic into practice */
   tools: ToolId[];
-  /** category on the site map (`GROUPS` in brief.ts) */
+  /** category on the site map (`GROUPS` in brief.ts); also sets the page's hue */
   group: GroupId;
+  /** the topic's emblem: same icon set everywhere, one per topic */
+  icon: LucideIcon;
+  /** other topics worth reading next, and why (shown at the end of the page and on the map) */
+  links: { to: string; why: string }[];
 }
 
 export type GroupId = "sees" | "feeds" | "costs" | "wrong" | "behind";
+
+/** The bar at the end of a topic: what it found, and what to do. Plain words, no new facts. */
+export interface Takeaway {
+  found: string;
+  do: string[];
+  /** how long the actions take, honestly */
+  effort: string;
+  /** who can ignore this topic */
+  skip?: string;
+}
 
 /** Where a widget's numbers come from. Shown as a badge so nobody mistakes a diagram for data. */
 export type DataKind = "study" | "estimate" | "yours" | "illustration" | "opinion" | "codebase";
@@ -44,6 +61,9 @@ export interface WidgetGuide {
   try: string;
   point: string;
   data: DataKind[];
+  /** the premise: which study (or measurement) the numbers come from, said before anything else.
+      Required when data includes "study" or "estimate". */
+  basis?: string;
 }
 
 export type Transition = "fade" | "push" | "rise" | "zoom" | "wipe" | "iris";
@@ -78,6 +98,8 @@ export type Slide = SlideBase &
         label: string;
         /** what it means for the reader */
         meaning: string;
+        /** how the result was scored, when "better" needs defining */
+        method?: string;
         source: string;
       }
     | { kind: "compare"; heading?: string; columns: { title: string; lines: string[]; emphasis?: boolean }[] }

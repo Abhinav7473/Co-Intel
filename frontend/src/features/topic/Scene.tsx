@@ -93,11 +93,16 @@ function SceneBody({ slide }: { slide: Slide }) {
           <motion.p variants={ITEM} className="mt-4 max-w-3xl text-[clamp(1.2rem,2vw,1.6rem)] leading-snug">
             {slide.label}
           </motion.p>
-          <motion.p variants={ITEM} className="mt-5 max-w-2xl border-l-2 border-accent pl-4 text-lg leading-relaxed">
+          {slide.method ? (
+            <motion.p variants={ITEM} className="mt-3 max-w-2xl text-[15px] leading-relaxed text-mute">
+              <span className="font-medium text-ink/80">How it was scored:</span> {slide.method}
+            </motion.p>
+          ) : null}
+          <motion.p variants={ITEM} className="mt-5 max-w-2xl border-l-2 border-topic pl-4 text-lg leading-relaxed">
             {slide.meaning}
           </motion.p>
           <motion.div variants={ITEM} className="mt-8 flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.14em] text-mute">
-            <span className="h-px w-10 bg-accent" />
+            <span className="h-px w-10 bg-topic" />
             {slide.source}
           </motion.div>
         </>
@@ -109,8 +114,8 @@ function SceneBody({ slide }: { slide: Slide }) {
           <div className={cn("mt-10 grid gap-4", slide.columns.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2")}>
             {slide.columns.map((c) => (
               <motion.div key={c.title} variants={ITEM}>
-                <Panel className={cn("h-full p-7", c.emphasis && "border-accent/50 ring-1 ring-accent/30")}>
-                  <div className={cn("mb-5 h-0.5 w-10 rounded-full", c.emphasis ? "bg-accent" : "bg-ink/20")} />
+                <Panel className={cn("h-full p-7", c.emphasis && "border-topic/50 ring-1 ring-topic/30")}>
+                  <div className={cn("mb-5 h-0.5 w-10 rounded-full", c.emphasis ? "bg-topic" : "bg-ink/20")} />
                   <h3 className="font-display text-3xl tracking-tight">{c.title}</h3>
                   <div className="mt-4 space-y-1.5">
                     {c.lines.map((l) => (
@@ -149,18 +154,28 @@ function SceneBody({ slide }: { slide: Slide }) {
 }
 
 /** Read-me above every widget: what it shows, what to do, why it matters, and where its numbers come from. */
-function Guide({ guide }: { guide: WidgetGuide }) {
+export function Guide({ guide }: { guide: WidgetGuide }) {
   const rows = [
     ["What you're looking at", guide.shows],
     ["Try", guide.try],
     ["The point", guide.point],
   ] as const;
+  const studied = guide.data.includes("study");
   return (
     <motion.div variants={ITEM} className="mb-6">
+      {/* the premise first: which study, before what to look at */}
+      {guide.basis ? (
+        <p className="mb-5 max-w-3xl text-[17px] leading-relaxed text-ink/85">
+          <span className="mr-2 inline-flex translate-y-[-1px] items-center rounded-full bg-topic px-2.5 py-0.5 text-[12px] font-medium text-surface">
+            {studied ? "The study" : "Based on"}
+          </span>
+          {renderInline(guide.basis)}
+        </p>
+      ) : null}
       <dl className="grid gap-x-6 gap-y-4 md:grid-cols-3">
         {rows.map(([k, v], i) => (
-          <div key={k} className={cn("border-t-2 pt-3", i === 2 ? "border-accent" : "border-line")}>
-            <dt className={cn("mb-1 font-mono text-[11px] uppercase tracking-[0.12em]", i === 2 ? "text-accent" : "text-mute")}>{k}</dt>
+          <div key={k} className={cn("border-t-2 pt-3", i === 2 ? "border-topic" : "border-line")}>
+            <dt className={cn("mb-1 font-mono text-[11px] uppercase tracking-[0.12em]", i === 2 ? "text-topic" : "text-mute")}>{k}</dt>
             <dd className={cn("text-[15px] leading-relaxed", i === 2 ? "text-ink" : "text-ink/80")}>{v}</dd>
           </div>
         ))}
@@ -207,16 +222,16 @@ function FineLines({ lines, numbered, ruled }: { lines: Line[]; numbered?: boole
               className="group flex w-full items-baseline gap-5 text-left disabled:cursor-default"
             >
               {numbered ? (
-                <span className="w-7 shrink-0 font-mono text-[13px] tabular-nums text-accent">{String(i + 1).padStart(2, "0")}</span>
+                <span className="w-7 shrink-0 font-mono text-[13px] tabular-nums text-topic">{String(i + 1).padStart(2, "0")}</span>
               ) : (
-                <span className="mb-[0.4em] h-px w-8 shrink-0 self-end bg-accent" />
+                <span className="mb-[0.4em] h-px w-8 shrink-0 self-end bg-topic" />
               )}
               <span className="flex-1 text-[clamp(1.15rem,2vw,1.55rem)] font-light leading-snug text-ink/90">{l.text}</span>
               {l.more ? (
                 <span
                   className={cn(
                     "flex size-7 shrink-0 items-center justify-center rounded-full border border-line text-mute transition group-hover:border-line-strong group-hover:text-ink",
-                    expanded && "rotate-45 border-accent text-accent",
+                    expanded && "rotate-45 border-topic text-topic",
                   )}
                 >
                   <Plus className="size-3.5" />
@@ -255,7 +270,7 @@ function Details({ slide }: { slide: Slide }) {
       <AnimatePresence initial={false}>
         {open ? (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-            <div className="mt-3 border-l-2 border-accent/40 pl-5">
+            <div className="mt-3 border-l-2 border-topic/40 pl-5">
               {slide.details?.map((d) => (
                 <p key={d} className="mb-2.5 text-[15px] leading-relaxed text-ink/80">
                   {renderInline(d)}

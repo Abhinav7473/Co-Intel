@@ -52,7 +52,7 @@ Index Sickness is one developer's project, judged by the same person. "Eliminate
 **Record:** the score, and whether the single-case overclaim appears in the top three.
 **Expect (CHI 2026):** A scores higher and catches the flaw less often. If it doesn't, say so in the talk.
 
-### Run 1 results (2026-10-05, owner, one run per chat, sentence only — not the full abstract)
+### Run 1 results (2026-10-05, owner, GPT 5.6 Luna in ChatGPT, one run per chat, sentence only — not the full abstract)
 | Chat | Score | Top objection | Rewrite offered | Named the real flaw (n = 1, self-judged)? |
 |---|---|---|---|---|
 | Temporary (memory off) | 4/10 | "eliminates" + confounds | "substantially reduces" | No |

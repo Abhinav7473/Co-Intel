@@ -28,6 +28,9 @@
   --color-caution: #7a5200;
   --color-caution-soft: #fdf3dc;
 
+  /* themed chrome (see :root below); defaults to the accent outside a theme */
+  --color-topic: var(--color-accent);
+
   --shadow-card: 0 1px 2px rgb(22 24 29 / 0.06), 0 8px 24px -12px rgb(22 24 29 / 0.18);
   --shadow-lift: 0 2px 4px rgb(22 24 29 / 0.06), 0 18px 40px -16px rgb(22 24 29 / 0.28);
 
@@ -38,6 +41,17 @@
   --radius-panel: 20px;
   --radius-control: 12px;
   --radius-bar: 16px;
+}
+
+/* Theme hues, one per site-map group (Okabe-Ito, darkened to ≥ 4.75:1 on canvas for text).
+   `hue(group)` sets --color-topic to one of these on a subtree; chrome uses `topic`, widgets keep `accent`.
+   Plain :root, not @theme: Tailwind drops theme variables no utility references. */
+:root {
+  --color-t-sees: #0072b2;
+  --color-t-feeds: #007a5e;
+  --color-t-costs: #995500;
+  --color-t-wrong: #a8457f;
+  --color-t-behind: #4c5466;
 }
 
 /* Shared text field: inputs, textareas and selects in every form */
@@ -97,7 +111,7 @@
 }
 
 @utility text-gradient {
-  background: linear-gradient(100deg, var(--color-ink) 0%, #23466b 45%, var(--color-accent) 100%);
+  background: linear-gradient(100deg, var(--color-ink) 0%, color-mix(in oklab, var(--color-topic) 55%, var(--color-ink)) 45%, var(--color-topic) 100%);
   background-clip: text;
   color: transparent;
 }
@@ -176,6 +190,23 @@ html:active-view-transition-type(enter-topic)::view-transition-old(main) { anima
 @keyframes vt-in-left { from { transform: translateX(-8%); opacity: 0; } }
 @keyframes vt-rise { from { transform: translateY(40px); opacity: 0; } }
 @keyframes vt-fade-out { to { opacity: 0; } }
+
+/* Hero: the context window fills cell by cell on load (timings mirrored in ContextScrubber.tsx) */
+@keyframes cell-in {
+  from { opacity: 0; transform: scale(0.6); }
+}
+.cell-fill {
+  animation: cell-in 260ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation-delay: calc(var(--i) * 3.5ms + 500ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cell-fill { animation: none; }
+}
+
+/* Film grain for the hero bloom (inline SVG turbulence, no asset) */
+@utility grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.09 0 0 0 0 0.11 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
 /* Web Interface Guidelines: balanced headings, no widows in prose, no double-tap zoom delay */
 @layer base {

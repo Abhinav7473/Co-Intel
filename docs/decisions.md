@@ -137,3 +137,31 @@ what was built on a whim. Numbers come from the repo via `make facts` (`scripts/
 Home topic grid replaced by a site map (5 groups × topics × scene classes × tools); every topic opens with an outline.
 Yes-man run 1 added to memory. *Owner: present how the app was built; navigate with meta-diagrams; be honest that the
 tools have no users and some parts were whims.* (Rejected: hand-typed counts — they go stale.)
+
+2026-10-05 — Navigation is a map, not a table. `/map` (and the home page) show the five themes as blocks; whole topic
+cards are links, scene squares jump to a scene, seen squares fill in, and "You are here" follows the reader (scene crossing
+40% of the viewport, IntersectionObserver ref callback → external store; visited in localStorage). Topic pages: mini-map
+rail with the live scene ring, mobile pill, "Where next" = two hand-picked cross-links (each in its theme's hue) + prev/next
++ map. Each theme has a hue, each topic an emblem. The hero diagram got the same guide as every widget. New icon: token
+grid (the old one read as "an L and a ball"). Old `SiteMap` table removed. Skills used: frontend-design.
+*Owner: "I wasn't expecting a table that forces the user to click on the tiny subheading … reduce information cost."*
+(Rejected: overriding `--color-accent` per topic — widget data colours would collide with the orange/purple themes.)
+
+2026-10-05 — Premise before data. Every study/estimate widget names its study first (`guide.basis`, enforced by
+`make check-content`); Chroma's stat says how "better" was scored (GPT-4.1 grader tuned to >99% agreement with ~600
+hand labels, 306 questions). Index Sickness stat now precedes the tiers widget. Yes-man run labelled GPT 5.6 Luna.
+Skills: rubric → "where each kind of instruction lives" (with examples) → new script exhibit (citation check, with vs
+without a script; scripts run outside the chat, only output enters — Anthropic Agent Skills docs) → what goes wrong.
+Connectors widget shows an example per loading mode; the −98.7% figure is now attributed to the one transcript task it
+measured, not to tool definitions (that was wrong). Cost: caching explained as a scene (resend → cache → invalidation →
+habit, from Anthropic's caching docs); the 97% is its own stat naming its source (one developer's blog, own logs).
+Feeling-vs-stopwatch is now guess-then-reveal (the reader's input answers a question instead of moving a decorative dot).
+Primary sources replace blog summaries where they exist (Anthropic engineering posts). Hero: see design.md.
+*Owner: "By putting the studies up, it increases trust"; "97% … which study??? man cmon"; "why is the user getting agency
+… when the stopwatch result does not change."*
+
+2026-10-05 — Takeaway bar after every topic (`content/takeaways.ts`, `topic/TakeawayBar`): what it found, what to do,
+how long it takes, who can skip it. Unprestiged on purpose: plain verbs, no new facts. Audited with web-design-guidelines
+(first person → neutral, checkbox-looking bullets → arrows, numerals). Rejected: a summary of the scenes (restates facts,
+breaks "each fact appears once"). `grill-me` is user-invocable only; the owner runs `/grill-me`.
+*Owner: "not a summary, unprestiged takeaways."*

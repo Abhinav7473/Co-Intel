@@ -11,6 +11,7 @@ import { MemoryTiers } from "./MemoryTiers";
 import { MistakesAudit } from "./MistakesAudit";
 import { OdysseusGrid } from "./OdysseusGrid";
 import { PerceptionGap } from "./PerceptionGap";
+import { ScriptExhibit } from "./ScriptExhibit";
 import { SkillLevels } from "./SkillLevels";
 import { SpecExhibit } from "./SpecExhibit";
 import { SycophancyBars } from "./SycophancyBars";
@@ -35,4 +36,5 @@ export const WIDGETS: Record<WidgetId, ComponentType> = {
   "learning-quiz": LearningQuiz,
   "info-system": InfoSystem,
   "decision-log": DecisionLog,
+  "script-exhibit": ScriptExhibit,
 };

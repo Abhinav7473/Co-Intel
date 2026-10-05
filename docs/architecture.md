@@ -8,8 +8,9 @@ Dev: nginx proxies everything else to Vite (HMR). Prod: nginx serves the built S
 ## Routes (`frontend/src/router.tsx`)
 | Path | Page | Purpose |
 |---|---|---|
-| `/` | `features/home/HomePage` | Hero with context scrubber, status, topic hub, tools, sources |
-| `/topics/$slug` | `features/topic/TopicPage` | One topic: header, scroll-linked scenes, your entries, prev/next |
+| `/` | `features/home/HomePage` | Hero with context scrubber + its guide, status, theme map, tools, sources |
+| `/map` | `features/map/MapPage` | The theme map: "You are here", every topic and scene one click away, tools |
+| `/topics/$slug` | `features/topic/TopicPage` | One topic in its theme hue: mini-map rail, scenes, your entries, "Where next" |
 | `/audit`, `/audit/$id` | `features/audit/*` | Paste setup → live report → save; saved report + diff vs previous |
 | `/assess` | `features/assess/AssessPage` | 18 questions by topic → radar, fixes, history |
 | `/experiments`, `/experiments/$id` | `features/experiments/*` | Templates → A/B experiment → logged runs → comparison |
@@ -23,6 +24,7 @@ View Transitions API with types (see `docs/design.md`).
 |---|---|
 | `content/` | Data only: `brief.ts` (topics), `deck.ts` (scenes), `data.ts` (widget datasets), `assessment.ts`, `experiments.ts`, `tools.ts` |
 | `features/<page>/` | One folder per route group; pure logic next to it (`audit/analyze.ts`, `experiments/compare.ts`) |
+| `features/map/` | `position.ts` (where the reader is + visited scenes: external store, localStorage, IntersectionObserver ref callback), `MapParts` (ThemeMap, MiniMap rail, HerePill, SceneChips, Emblem) |
 | `features/widgets/` | Interactive explainers used inside topic scenes, registered by id |
 | `shell/` | `AppShell` (backdrop, top bar, `Page` frame), `TopBar`, `layout.ts` |
 | `ui/` | Shared primitives: `LiquidGlass`, `Panel`, `Button`, `Segmented`, `Toggle`, `Slider`, `Spotlight`, `FlowPaths`, `SourceCards`, `charts/` |

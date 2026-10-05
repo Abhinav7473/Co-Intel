@@ -88,6 +88,12 @@ Missed opportunities: no press feedback on `Button` (scale 0.97, 160ms); KB filt
 True today. After the talk, if people try them, update `build-status` in `deck.ts` (the honest-status list).
 
 ## Gaps (known, not yet fixed)
+- Script exhibit token counts are estimates (12-page draft ≈ 6k, 300-entry .bib ≈ 30k). Swap in a real draft's count if you demo it.
+- Yes-man scene assumes GPT 5.6 Luna was the model in all three chats; correct the details line if not.
+- Hero bloom/grain is subtle by design; check it reads on the projector, or raise the 18% in `HomePage.tsx` `Bloom`.
+- Map "seen" counts any scene scrolled past the reading line, read or not. The 22 cross-link reasons (`links` in
+  `brief.ts`) are my reading of how topics connect; check them before the talk.
+- Theme hues are untested on the room's projector (orange and purple themes especially).
 - No projector/mobile pass: verify at 1920×1080 and 1280×720 with the room's actual screen.
 - Assessment questions and weights are mine, unvalidated.
 - Audit rules are pattern matching; expect false positives on real files.

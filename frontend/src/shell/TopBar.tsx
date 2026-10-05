@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BookOpenText, ClipboardCheck, FlaskConical, Library, ScanSearch } from "lucide-react";
+import { ClipboardCheck, FlaskConical, Library, Map as MapIcon, ScanSearch } from "lucide-react";
 import { motion, useScroll } from "motion/react";
 import { LiquidGlass } from "@/ui/LiquidGlass";
 import { CONTAINER } from "./layout";
 
 const NAV = [
-  { to: "/", label: "Topics", icon: BookOpenText, match: (p: string) => p === "/" || p.startsWith("/topics") },
+  { to: "/map", label: "Map", icon: MapIcon, match: (p: string) => p === "/map" || p.startsWith("/topics") },
   { to: "/audit", label: "Audit", icon: ScanSearch, match: (p: string) => p.startsWith("/audit") },
   { to: "/assess", label: "Assess", icon: ClipboardCheck, match: (p: string) => p.startsWith("/assess") },
   { to: "/experiments", label: "Experiments", icon: FlaskConical, match: (p: string) => p.startsWith("/experiments") },

@@ -43,6 +43,12 @@ const topicRoute = createRoute({
   component: lazyRouteComponent(() => import("@/features/topic/TopicPage"), "TopicPage"),
 });
 
+const mapRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/map",
+  component: lazyRouteComponent(() => import("@/features/map/MapPage"), "MapPage"),
+});
+
 const auditRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/audit",
@@ -97,6 +103,7 @@ const kbRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   homeRoute,
   topicRoute,
+  mapRoute,
   auditRoute,
   auditDetailRoute,
   assessRoute,

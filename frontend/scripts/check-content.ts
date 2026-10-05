@@ -4,6 +4,7 @@
  */
 import { SECTIONS } from "../src/content/brief.ts";
 import { SLIDES } from "../src/content/deck.ts";
+import { TAKEAWAYS } from "../src/content/takeaways.ts";
 
 const LIMITS = { lines: 4, columns: 3, line: 90, heading: 60, more: 220, details: 320 };
 const problems: string[] = [];
@@ -32,6 +33,8 @@ for (const s of SLIDES) {
       if (len(g.name) > 40) fail(s.id, `guide name ${len(g.name)} > 40 chars`);
       for (const k of ["shows", "try", "point"] as const) if (len(g[k]) > 170) fail(s.id, `guide ${k} ${len(g[k])} > 170 chars`);
       if (!g.data.length) fail(s.id, "guide must say where its numbers come from (data)");
+      if (g.data.some((d) => d === "study" || d === "estimate") && !g.basis?.trim()) fail(s.id, "study/estimate widget must name its study up front (guide.basis)");
+      if (g.basis && len(g.basis) > 240) fail(s.id, `guide basis ${len(g.basis)} > 240 chars`);
     }
   }
   if (s.kind === "compare") for (const c of s.columns) for (const l of c.lines) if (len(l) > LIMITS.line) fail(s.id, `column line > ${LIMITS.line} chars`);
@@ -43,6 +46,19 @@ for (const s of SLIDES) {
     if (len(s.study) > 160) fail(s.id, `study ${len(s.study)} > 160 chars`);
     if (len(s.label) > 90) fail(s.id, `label ${len(s.label)} > 90 chars`);
     if (len(s.meaning) > 140) fail(s.id, `meaning ${len(s.meaning)} > 140 chars`);
+    if (s.method && len(s.method) > 220) fail(s.id, `method ${len(s.method)} > 220 chars`);
+  }
+}
+
+for (const sec of SECTIONS) {
+  const t = TAKEAWAYS[sec.slug];
+  if (!t) fail(sec.slug, "topic has no takeaway bar (content/takeaways.ts)");
+  else {
+    if (len(t.found) > 110) fail(sec.slug, `takeaway 'found' ${len(t.found)} > 110 chars`);
+    if (t.do.length < 1 || t.do.length > 2) fail(sec.slug, "takeaway needs 1–2 actions");
+    for (const d of t.do) if (len(d) > 90) fail(sec.slug, `takeaway action ${len(d)} > 90 chars`);
+    if (len(t.effort) > 24) fail(sec.slug, `takeaway effort ${len(t.effort)} > 24 chars`);
+    if (t.skip && len(t.skip) > 90) fail(sec.slug, `takeaway skip ${len(t.skip)} > 90 chars`);
   }
 }
 

@@ -15,6 +15,15 @@ one accent. Colour-blind-safe pairs from Okabe-Ito.
 | `series-b` | #e69f00 | series A in A/B charts; fill only, never text | 2.1 |
 `line` / `line-strong` are ink at 10% / 22%. Okabe sky blue #56b4e9 is the third data colour (budget bar).
 
+## Themes (one hue per site-map group)
+`--color-t-{sees,feeds,costs,wrong,behind}` in a plain `:root` block (Tailwind drops unused `@theme` vars): Okabe blue,
+bluish green, orange, reddish purple, slate, darkened to ≥ 4.75:1 on canvas. `hue(group)` (`brief.ts`) sets
+`--color-topic` on a subtree; chrome uses `bg-/text-/border-topic` (topic header, scene markers, stat gradient, guides,
+map blocks). Widgets keep `accent`/`series-b` so data colours never collide with a theme. Each topic has a Lucide emblem.
+
+## Icon
+`public/favicon.svg`: a context window as a grid of token cells, three in use (memory blue, one tool orange), the rest free.
+
 ## Geometry & type
 Panels 20px · controls 12px · top bar 16px · switches are pills. Tokens: `rounded-panel`, `rounded-control`, `rounded-bar`
 (new code uses these; ~40 older `rounded-[Npx]` values remain, see open-questions). `card` utility = white + hairline + soft
@@ -44,6 +53,13 @@ fallback elsewhere. Only on the top bar and the hero lens. Everything else is so
 | `useMotionValue` + `useTransform` + `clip-path` | hero `ContextScrubber` (comparison slider, no re-render while scrubbing) |
 Rule: scroll-linked motion is entry-only (finishes when the scene reaches 40% from the top); content you are
 reading never fades. Never put `whileInView` on a clipped element (a fully clipped box never intersects).
+
+## Hero (2026-10-05)
+One orchestrated load: title words resolve from blur, the context window fills cell by cell in reading order
+(`.cell-fill`, CSS, staggered by `--i`) while the free-token counters count down from 200k (Motion value, no re-render),
+then the divider sweeps once. One hand-drawn underline on "what the model sees". Behind it: one bloom per theme hue under
+a CSS-only `grain`. Ideas, not code, from SmoothUI (Focus Blur Resolve, Number Flow) and Componentry (Annotated Text);
+their aurora/prism/dither backgrounds were skipped as generic.
 
 ## Borrowed ideas (MIT, rewritten without effects)
 Kokonut UI: spotlight cards → `ui/Spotlight`. The scrubber adapts the cursor-scrub idea from a pasted generator spec (no assets used). Charts are our own small

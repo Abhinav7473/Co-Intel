@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { BRIEF_THESIS, SECTIONS } from "@/content/brief";
+import { BRIEF_THESIS, BRIEF_TITLE, SECTIONS } from "@/content/brief";
 import { SOURCES } from "@/content/data";
 import { TOOLS } from "@/content/tools";
 import { useAssessments } from "@/hooks/useAssessments";
@@ -12,8 +12,10 @@ import { useSetupAudits } from "@/hooks/useSetupAudits";
 import { CONTAINER } from "@/shell/layout";
 import { SourceCards } from "@/ui/SourceCards";
 import { cn } from "@/utils/cn";
-import { ContextScrubber } from "./ContextScrubber";
-import { SiteMap } from "./SiteMap";
+import { ThemeMap } from "@/features/map/MapParts";
+import { YouAreHere } from "@/features/map/MapPage";
+import { Guide } from "@/features/topic/Scene";
+import { ContextScrubber, SCRUBBER_GUIDE } from "./ContextScrubber";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -33,34 +35,100 @@ export function HomePage() {
 
 function Hero() {
   return (
-    <header className={cn(CONTAINER, "pb-20 pt-36")}>
-      <div className="grid gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-end">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE }}
-            className="font-display text-[clamp(2.75rem,5.5vw,4.75rem)] font-semibold leading-[0.95] tracking-[-0.035em]"
-          >
-            AI Workflow Habits
-          </motion.h1>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: 0.15 }} className="mt-6 max-w-md text-lg leading-relaxed text-ink/75">
-            {BRIEF_THESIS}
-          </motion.p>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-8 flex flex-wrap items-center gap-5">
-            <Link to="/audit" className="inline-flex h-11 items-center rounded-[12px] bg-ink px-5 font-medium text-canvas transition-[background-color,transform] duration-150 hover:bg-ink/85 active:scale-[0.97]">
-              Audit your setup
-            </Link>
-            <a href="#topics" className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
-              Read the research
-            </a>
+    <div className="relative isolate">
+      <Bloom />
+      <header className={cn(CONTAINER, "pb-20 pt-36")}>
+        <div className="grid gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-end">
+          <div>
+            <h1 className="font-display text-[clamp(2.75rem,5.5vw,4.75rem)] font-semibold leading-[0.95] tracking-[-0.035em]">
+              {/* each word comes into focus: the page opens on "what the model sees" */}
+              {BRIEF_TITLE.split(" ").map((w, i) => (
+                <motion.span
+                  key={w}
+                  className="inline-block will-change-[filter]"
+                  initial={{ opacity: 0, filter: "blur(14px)", y: 10 }}
+                  animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.08 + i * 0.12, ease: EASE }}
+                >
+                  {w}
+                  {i < 2 ? "\u00a0" : null}
+                </motion.span>
+              ))}
+            </h1>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: 0.35 }} className="mt-6 max-w-md text-lg leading-relaxed text-ink/75">
+              <Thesis />
+            </motion.p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-8 flex flex-wrap items-center gap-5">
+              <Link to="/map" className="inline-flex h-11 items-center rounded-control bg-ink px-5 font-medium text-canvas transition-[background-color,transform] duration-150 hover:bg-ink/85 active:scale-[0.97]">
+                Open the map
+              </Link>
+              <Link to="/audit" className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+                Audit your setup
+              </Link>
+            </motion.div>
+          </div>
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: EASE }}>
+            <ContextScrubber />
           </motion.div>
         </div>
-        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: EASE }}>
-          <ContextScrubber />
+        {/* the same read-me every diagram in the topics carries */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="mt-12">
+          <Guide guide={SCRUBBER_GUIDE} />
         </motion.div>
-      </div>
-    </header>
+      </header>
+    </div>
+  );
+}
+
+const MARK = "what the model sees";
+
+/** The thesis, with its key phrase marked by hand: one stroke, drawn once. */
+function Thesis() {
+  const [before, after] = BRIEF_THESIS.split(MARK);
+  return (
+    <>
+      {before}
+      <span className="relative inline-block text-ink">
+        {MARK}
+        <svg aria-hidden viewBox="0 0 200 12" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-3 w-full overflow-visible">
+          <motion.path
+            d="M2 8 C 40 3, 78 10, 118 6 S 176 4, 198 7"
+            fill="none"
+            stroke="var(--color-accent)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.7, delay: 1.1, ease: [0.65, 0, 0.35, 1] }}
+          />
+        </svg>
+      </span>
+      {after}
+    </>
+  );
+}
+
+/** Behind the hero: one faint bloom per theme hue (the five colours the map uses), under a film grain. */
+function Bloom() {
+  const blobs = [
+    ["sees", "left-[2%] top-[8%] size-[38rem]"],
+    ["feeds", "left-[38%] top-[-12%] size-[34rem]"],
+    ["costs", "right-[-6%] top-[18%] size-[36rem]"],
+    ["wrong", "left-[22%] top-[46%] size-[30rem]"],
+    ["behind", "right-[18%] top-[58%] size-[26rem]"],
+  ] as const;
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[56rem] overflow-hidden [mask-image:linear-gradient(to_bottom,black_55%,transparent)]">
+      {blobs.map(([g, cls]) => (
+        <div
+          key={g}
+          className={cn("absolute rounded-full", cls)}
+          style={{ background: `radial-gradient(closest-side, color-mix(in oklab, var(--color-t-${g}) 18%, transparent), transparent)` }}
+        />
+      ))}
+      <div className="grain absolute inset-0 opacity-[0.22] mix-blend-multiply" />
+    </div>
   );
 }
 
@@ -95,15 +163,17 @@ function Status() {
 }
 
 function Topics() {
-  const { data: entries = [] } = useEntries();
   return (
     <section id="topics" className="scroll-mt-24">
-      <SectionHead
-        eyebrow="The research"
-        title="A map of the site"
-        lead={`${SECTIONS.length} topics in five groups. Each square is one scene; its icon says what kind. Click any square to jump straight to it.`}
-      />
-      <SiteMap yours={(slug) => entries.filter((e) => e.topic === slug).length} />
+      <div className="mb-8 grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-end">
+        <SectionHead
+          eyebrow="The research"
+          title="A map of the site"
+          lead={`${SECTIONS.length} topics in five themes. Open a topic, or jump straight to one scene; squares you've seen fill in.`}
+        />
+        <YouAreHere />
+      </div>
+      <ThemeMap />
     </section>
   );
 }
@@ -111,7 +181,9 @@ function Topics() {
 function Tools() {
   return (
     <section className="mt-24">
-      <SectionHead eyebrow="The tools" title="Apply it to your own setup" lead="Everything you save stays in this app's database." />
+      <div className="mb-8">
+        <SectionHead eyebrow="The tools" title="Apply it to your own setup" lead="Everything you save stays in this app's database." />
+      </div>
       <ul className="grid gap-3 md:grid-cols-2">
         {TOOLS.map((t) => (
           <li key={t.id}>
@@ -161,7 +233,7 @@ function Sources() {
 
 function SectionHead({ eyebrow, title, lead }: { eyebrow: string; title: string; lead: string }) {
   return (
-    <div className="mb-8 max-w-2xl">
+    <div className="max-w-2xl">
       <div className="mb-2 font-mono text-[12px] uppercase tracking-[0.16em] text-accent">{eyebrow}</div>
       <h2 className="font-display text-[clamp(2rem,3.5vw,2.8rem)] font-semibold leading-tight tracking-[-0.02em]">{title}</h2>
       <p className="mt-2 text-[16px] text-mute">{lead}</p>

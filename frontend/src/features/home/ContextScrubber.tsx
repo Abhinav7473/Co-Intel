@@ -1,5 +1,6 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
 import { animate, motion, useMotionValue, useMotionValueEvent, useReducedMotion, useTransform } from "motion/react";
+import type { WidgetGuide } from "@/content/types";
 import { cn } from "@/utils/cn";
 
 /**
@@ -30,7 +31,21 @@ const TIERED: Part[] = [
 
 const used = (parts: Part[]) => parts.reduce((a, p) => a + p.tokens, 0);
 const k = (n: number) => `${Math.round(n / 1000)}k`;
+/** The read-me shown under the hero, like every widget's guide in the topics. */
+export const SCRUBBER_GUIDE: WidgetGuide = {
+  name: "One context window, two ways",
+  shows: "A 200k-token context window. Each square holds 500 tokens; coloured squares are spent before you type your task.",
+  try: "Move the divider across the grid, or focus it and use the arrow keys. Left of it: one long session. Right: a tiered one.",
+  point: "Same model, same window: the tiered session leaves about three times as much room for the task. That room is decided by you.",
+  data: ["illustration"],
+};
+
 const DEAD_ZONE = 0.04; // ±4% around the centre snaps to the middle
+
+/** Load sequence: the window fills cell by cell (CSS, see .cell-fill), the counters count down in step, then the divider sweeps. */
+const FILL_DELAY = 0.5; // s, matches .cell-fill
+const PER_CELL = 0.0035; // s, matches .cell-fill
+const fillTime = (parts: Part[]) => (used(parts) / CELL) * PER_CELL + 0.26;
 
 export function ContextScrubber() {
   const pos = useMotionValue(0.5); // divider position: bloated shown left of it, tiered right of it
@@ -63,14 +78,14 @@ export function ContextScrubber() {
         // one orchestrated moment, once: show that the divider moves
         if (played.current || reduce) return;
         played.current = true;
-        void animate(pos, [0.5, 0.8, 0.22, 0.5], { duration: 2.4, ease: [0.77, 0, 0.175, 1], delay: 0.4 });
+        void animate(pos, [0.5, 0.8, 0.22, 0.5], { duration: 2.4, ease: [0.77, 0, 0.175, 1], delay: FILL_DELAY + fillTime(BLOATED) + 0.2 });
       }}
       viewport={{ once: true, amount: 0.6 }}
     >
       <div className="mb-3 flex items-end justify-between gap-6 text-[14px]">
         {/* the clipped top layer (bloated) is revealed from the left edge to the divider */}
-        <Side title="One bloated, long session" free={WINDOW - used(BLOATED)} align="left" />
-        <Side title="Tiered, one task per session" free={WINDOW - used(TIERED)} align="right" />
+        <Side title="One bloated, long session" parts={BLOATED} align="left" />
+        <Side title="Tiered, one task per session" parts={TIERED} align="right" />
       </div>
 
       <div
@@ -124,12 +139,24 @@ export function ContextScrubber() {
   );
 }
 
-function Side({ title, free, align }: { title: string; free: number; align: "left" | "right" }) {
+function Side({ title, parts, align }: { title: string; parts: Part[]; align: "left" | "right" }) {
+  const free = WINDOW - used(parts);
+  const reduce = useReducedMotion();
+  // counts down from an empty window as the cells fill; rendered from the motion value, no re-renders
+  const n = useMotionValue(reduce ? free : WINDOW);
+  const shown = useTransform(n, k);
+  const started = useRef(false);
+  // ref callback, run once: re-renders while scrubbing must not restart the count
+  const start = (el: HTMLElement | null) => {
+    if (!el || reduce || started.current) return;
+    started.current = true;
+    void animate(n, free, { duration: fillTime(parts), delay: FILL_DELAY, ease: "linear" });
+  };
   return (
     <div className={align === "right" ? "text-right" : undefined}>
       <div className="text-mute">{title}</div>
       <div className="font-display text-3xl tabular-nums sm:text-4xl">
-        {k(free)} <span className="text-[15px] font-normal text-mute">free for the task</span>
+        <motion.span ref={start}>{shown}</motion.span> <span className="text-[15px] font-normal text-mute">free for the task</span>
       </div>
     </div>
   );
@@ -149,9 +176,14 @@ function Grid({ parts }: { parts: Part[] }) {
   while (cells.length < WINDOW / CELL) cells.push("");
   return (
     <div className="grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[3px] bg-surface p-3 sm:grid-cols-[repeat(40,minmax(0,1fr))]">
-      {cells.map((cls, i) => (
-        <span key={i} className={cn("aspect-square rounded-[2px]", cls || "border border-line")} />
-      ))}
+      {cells.map((cls, i) =>
+        cls ? (
+          // --i staggers the fill: the window loads in reading order, the way a model receives it
+          <span key={i} className={cn("cell-fill aspect-square rounded-[2px]", cls)} style={{ "--i": i } as CSSProperties} />
+        ) : (
+          <span key={i} className="aspect-square rounded-[2px] border border-line" />
+        ),
+      )}
     </div>
   );
 }
