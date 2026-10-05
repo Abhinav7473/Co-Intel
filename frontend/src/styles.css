@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/*
+ * One light theme, chosen for reading and projecting:
+ * warm off-white canvas (less glare than pure white), near-black ink,
+ * Okabe-Ito blue as the single accent, dark vermilion for risk only,
+ * Okabe-Ito orange as the second data series (charts only; too light for text).
+ * Contrast on canvas: ink 16.3, mute 5.7, accent 4.75, warn 5.5 (WCAG AA ≥ 4.5).
+ */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+
+  --color-canvas: #f6f5f1;
+  --color-surface: #ffffff;
+  --color-sunken: #eeece6;
+  --color-ink: #16181d;
+  --color-mute: #5b616e;
+  --color-line: rgb(22 24 29 / 0.1);
+  --color-line-strong: rgb(22 24 29 / 0.22);
+  --color-accent: #0072b2;
+  --color-accent-soft: #eef5fb;
+  --color-warn: #a94400;
+  --color-warn-soft: #fbeadf;
+  --color-series-b: #e69f00;
+  /* caution = "fix this" (between info and risk); Okabe orange, darkened for text */
+  --color-caution: #7a5200;
+  --color-caution-soft: #fdf3dc;
+
+  --shadow-card: 0 1px 2px rgb(22 24 29 / 0.06), 0 8px 24px -12px rgb(22 24 29 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(22 24 29 / 0.06), 0 18px 40px -16px rgb(22 24 29 / 0.28);
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 22%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* --------------------------------------------------------------- surfaces */
+@utility card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-card);
+}
+
+/* rim light for glass: bright top edge, hairline, soft drop */
+@utility glass-rim {
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.95),
+    inset 0 0 0 1px rgb(22 24 29 / 0.07),
+    0 1px 2px rgb(22 24 29 / 0.06),
+    0 12px 32px -14px rgb(22 24 29 / 0.3);
+}
+
+@utility glass-frost {
+  background: rgb(255 255 255 / 0.66);
+  backdrop-filter: blur(18px) saturate(1.5);
+}
+
+@utility text-gradient {
+  background: linear-gradient(100deg, var(--color-ink) 0%, #23466b 45%, var(--color-accent) 100%);
+  background-clip: text;
+  color: transparent;
+}
+
+@utility grid-lines {
+  background-image:
+    linear-gradient(rgb(22 24 29 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(22 24 29 / 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* ------------------------------------------------------------- range knob
+   A real control, not a bead: white knob, hairline, soft shadow, accent
+   halo on hover/focus, slight grow while dragging. */
+@layer components {
+  .range {
+    appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    cursor: pointer;
+    outline: none;
+  }
+  .range::-webkit-slider-thumb {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgb(22 24 29 / 0.14);
+    box-shadow: 0 1px 2px rgb(22 24 29 / 0.18), 0 3px 8px rgb(22 24 29 / 0.12);
+    transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
+  }
+  .range:hover::-webkit-slider-thumb,
+  .range:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-accent) 18%, transparent), 0 1px 2px rgb(22 24 29 / 0.18);
+  }
+  .range:active::-webkit-slider-thumb { transform: scale(1.12); }
+  .range::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgb(22 24 29 / 0.14);
+    box-shadow: 0 1px 2px rgb(22 24 29 / 0.18), 0 3px 8px rgb(22 24 29 / 0.12);
+  }
+}
+
+/* ------------------------------------------------------- view transitions
+   Route changes use the View Transitions API (TanStack Router passes types).
+   topic-next / topic-prev: lateral move between topics. enter-topic: from the hub.
+   Anything else: a quick cross-fade. The top bar never animates. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+  animation-timing-function: var(--ease-out-expo);
+}
+::view-transition-group(*) {
+  animation-duration: 0.55s;
+  animation-timing-function: var(--ease-out-expo);
+}
+html:active-view-transition-type(topic-next)::view-transition-old(main) { animation: vt-out-left 0.45s var(--ease-out-expo) both; }
+html:active-view-transition-type(topic-next)::view-transition-new(main) { animation: vt-in-right 0.55s var(--ease-out-expo) both; }
+html:active-view-transition-type(topic-prev)::view-transition-old(main) { animation: vt-out-right 0.45s var(--ease-out-expo) both; }
+html:active-view-transition-type(topic-prev)::view-transition-new(main) { animation: vt-in-left 0.55s var(--ease-out-expo) both; }
+html:active-view-transition-type(enter-topic)::view-transition-new(main) { animation: vt-rise 0.6s var(--ease-out-expo) both; }
+html:active-view-transition-type(enter-topic)::view-transition-old(main) { animation: vt-fade-out 0.25s ease both; }
+
+@keyframes vt-out-left { to { transform: translateX(-6%); opacity: 0; } }
+@keyframes vt-in-right { from { transform: translateX(8%); opacity: 0; } }
+@keyframes vt-out-right { to { transform: translateX(6%); opacity: 0; } }
+@keyframes vt-in-left { from { transform: translateX(-8%); opacity: 0; } }
+@keyframes vt-rise { from { transform: translateY(40px); opacity: 0; } }
+@keyframes vt-fade-out { to { opacity: 0; } }
