@@ -3,6 +3,18 @@
 Questions for Abhinav and known gaps. **Not** for the website: the site is audience material for the talk.
 Answer inline (write under the question); answered items move to `docs/decisions.md` and are deleted here.
 
+## Next session: start here (handoff 2026-10-09, v5)
+1. **/intro is now a stepped talk** (v5): 9 screens, 6 beats, one viewport each, snapped on desktop; outline from the
+   outside critique (seminar-audit §8). Run sheet in talk-notes ("v5"). Decisions log 2026-10-09 has what was cut.
+2. **Verify in a real, visible Chrome window:** PageDown/Space/clicker lands exactly on each screen (snap could not be
+   verified in the test pane); the 3D 2×2 comes apart on screen 2; bars grow on screen 6; the room's projector at 1080p.
+3. **Owner to-dos:** run the yes-man 5×5 *in Claude Code* on the on-screen rationale (then counts go on screen 6 and
+   real screenshots on 1 and 9); confirm the web version of Claude Code reads CLAUDE.md the way the 3D cards say.
+4. **Open:** a QR code / public URL for the take-home (needs a deploy URL); whether students have claude.ai/code open.
+5. **Nothing committed since `887f904`.** The v3 versions of IntroPage/Panels/World were untracked and are replaced;
+   the four removed files are only in the old session scratchpad. Commit soon.
+Working rules: change only what was asked; the owner runs `compose watch`; a hidden test pane pauses rAF/IO.
+
 ## Questions
 
 ### 0. Reframe (2026-10-05): what does the lab actually take home?

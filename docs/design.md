@@ -61,6 +61,17 @@ then the divider sweeps once. One hand-drawn underline on "what the model sees".
 a CSS-only `grain`. Ideas, not code, from SmoothUI (Focus Blur Resolve, Number Flow) and Componentry (Annotated Text);
 their aurora/prism/dither backgrounds were skipped as generic.
 
+## /intro: a stepped talk (v5, 2026-10-09)
+- One screen per section, snapped on desktop (`[data-snap]` rule in styles.css); a test is two screens (question,
+  answer). Copy left (5fr), evidence right (7fr); the 3D beat gets 4fr/8fr. Nothing tilts; no fades on every section.
+- Projector sizes: body ≈ 28px at 1080p, evidence text `clamp(1.15rem,1.5vw,1.75rem)`, big numbers ≥ 64px, small ≥ 16px.
+- One card style (`CARD` in Panels.tsx): white, hairline ring, one soft shadow, `rounded-panel`.
+- Motion: the opening title resolves once; the yes-man bars grow once; the one earned word decodes. That's all.
+- 3D (three.js via @react-three/fiber + drei), one beat only: four unlit white cards with painted text (site fonts,
+  tokens; 40px titles on a 640px face) go from a stack to a 2×2 facing the room as the screen arrives (`rig.exact`).
+  Accent = the session so far. Reduced motion / no WebGL: Hairline `Exploded` (`Flat.tsx`). The chunk is lazy-loaded.
+- Testing note: a hidden browser pane pauses rAF and IntersectionObserver, so the canvas, bars and decode look stuck there.
+
 ## Borrowed ideas (MIT, rewritten without effects)
 Kokonut UI: spotlight cards → `ui/Spotlight`. The scrubber adapts the cursor-scrub idea from a pasted generator spec (no assets used). Charts are our own small
 `ui/charts` (Gauge, Bars, Radar); Bklit adoption is still a target (`docs/target.md`).

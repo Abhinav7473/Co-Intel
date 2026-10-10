@@ -9,6 +9,7 @@ Dev: nginx proxies everything else to Vite (HMR). Prod: nginx serves the built S
 | Path | Page | Purpose |
 |---|---|---|
 | `/` | `features/home/HomePage` | Hero with context scrubber + its guide, status, theme map, tools, sources |
+| `/intro` | `features/intro/IntroPage` | The junior seminar as a stepped talk: 9 screens / 6 beats from `content/intro.ts` (all copy), `Panels` per screen, one 3D beat (`World`, lazy), `conductor.ts` for the rail |
 | `/map` | `features/map/MapPage` | The theme map: "You are here", every topic and scene one click away, tools |
 | `/topics/$slug` | `features/topic/TopicPage` | One topic in its theme hue: mini-map rail, scenes, your entries, "Where next" |
 | `/audit`, `/audit/$id` | `features/audit/*` | Paste setup → live report → save; saved report + diff vs previous |

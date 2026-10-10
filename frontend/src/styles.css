@@ -191,6 +191,23 @@ html:active-view-transition-type(enter-topic)::view-transition-old(main) { anima
 @keyframes vt-rise { from { transform: translateY(40px); opacity: 0; } }
 @keyframes vt-fade-out { to { opacity: 0; } }
 
+/* Hairline figures (lucasmarkes/hairline) in the site's palette: the plate is the canvas, lines are ink and
+   hairline greys, and what's lit is the accent, as in the 3D world. */
+.hairline-site {
+  --hairline-plate: var(--color-canvas);
+  --hairline-hi: var(--color-accent);
+  --hairline-edge: var(--color-ink);
+  --hairline-mid: color-mix(in oklab, var(--color-ink) 45%, var(--color-canvas));
+  --hairline-lo: color-mix(in oklab, var(--color-ink) 18%, var(--color-canvas));
+  --hairline-stroke: 1;
+}
+
+/* /intro is presented live: on desktop each screen snaps, so PageDown, Space or a clicker moves exactly one screen.
+   Native scroll with CSS snap; nothing listens to keys or the wheel. Phones scroll freely (screens can be taller). */
+@media (min-width: 1024px) {
+  html:has([data-snap]) { scroll-snap-type: y mandatory; }
+}
+
 /* Hero: the context window fills cell by cell on load (timings mirrored in ContextScrubber.tsx) */
 @keyframes cell-in {
   from { opacity: 0; transform: scale(0.6); }

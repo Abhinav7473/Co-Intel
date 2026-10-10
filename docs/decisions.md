@@ -165,3 +165,110 @@ how long it takes, who can skip it. Unprestiged on purpose: plain verbs, no new 
 (first person → neutral, checkbox-looking bullets → arrows, numerals). Rejected: a summary of the scenes (restates facts,
 breaks "each fact appears once"). `grill-me` is user-invocable only; the owner runs `/grill-me`.
 *Owner: "not a summary, unprestiged takeaways."*
+
+2026-10-07 — Undergrad version: `/intro`, a separate 15-minute path (7 scenes, `content/intro.ts`) reusing the scene
+renderer and the sycophancy widget; the grad site is unchanged. Two ideas only (memory flatters you, learn don't
+outsource), UX framing (design rationale critique, Nielsen's heuristics as criteria), presenter demo. Same copy limits
+via `make check-content`. Rejected: cutting the grad site down (loses depth for the lab); slides only (two artefacts to
+keep in sync). *Owner: "I could only get through 40% in 30 minutes … make this for undergrads … maximize clarity, don't
+overshoot."* `grill-me` points to a `grilling` skill that isn't installed.
+
+2026-10-07 — /intro gets "umph": a 3D opening (exploded chat app, scroll-driven) that the Habit 1 widget reuses (toggle
+removes the memory layer), two act headers in the hues of the topics they come from, a bigger closing card. "15-minute
+version" wording removed (the home link reads "Start with two habits"). Added three 0.186.1, @react-three/fiber 9.8.1,
+@react-three/drei 10.7.9, @types/three 0.186.0 (pinned, installed in the image). Reverses the 2026-10-05 parking of
+react-three-fiber for this page only. *Owner: "Give it some umph. Make each change coherent … use three js components
+wherever necessary."* Rejected: 3D elsewhere on /intro (the bars and the stat read better flat).
+
+2026-10-07 — /intro rebuilt as one persistent Three.js scroll world (8 chapters, `features/intro/{World,chapters,
+conductor,Panels}`), replacing the 3D opening + text scenes. Skills: installed `find-skills` (vercel-labs/skills), then
+via it `scroll-world-storytelling` + `build-threejs-scroll-worlds` (mengto/skills, 6.7K★, MIT), `impeccable`
+(pbakaus, 78K★) and `high-end-visual-design` (leonxlnx/taste-skill). Rejected: cloudai-x threejs-skills (no licence),
+r3f-skills / three-agent-skills (<130★), GSAP skills (would add GSAP beside Motion). `impeccable`'s launcher was not run
+(downloads a binary). The `memory-stack` widget and `ChatStack` were removed; the world carries both. The installs
+recreated `agent/skills/` duplicates; removed again. *Owner: "You can do way better!! run /find-skills"; fix "all of it".*
+
+2026-10-07 — /intro world restyled to the site's palette (white hairline cards, ink, accent only on memory; no glossy
+fills) and given a formation per chapter. The model is now a pearl blob with a particle halo (was a cube). Skills found
+via `find-skills` and installed: `shader-dev` (minimax-ai/skills, 13.7K★, MIT), `algorithmic-art` (anthropics/skills),
+`globe-particles` + `gooey-blob-system` (mengto/skills; gooey is SVG-only, unused here). Rejected: iart-ai (51★),
+cloudai-x threejs-shaders (no licence). *Owner: "It looks tacky because of the colors"; "arrange them in different
+wireframes"; "the model block kinda look awful; more like a blob with particles".*
+
+2026-10-07 — Junior seminar restarted from the content, not the page. Audit in `docs/seminar-audit.md` (inventory, Kvale
+lens via Ivey et al. 2026, SUCCESs score 27/60, bounds). Skills installed via `find-skills`: `grilling` + `teach`
+(mattpocock/skills, 280K★; `grilling` makes `/grill-me` work), `made-to-stick` (wondelai/skills), `workshop-facilitation`
+(deanpeters/product-manager-skills, licence unstated). Rejected: samber/dev-event-organizer-skills (2★).
+*Owner: 0/10 for /intro; "without the proper skills or plugins you can't design coherent things".*
+
+2026-10-07 — Grilled the junior seminar (via `/grill-me` → `grilling`). Settled: the question ("what can you change … that
+makes its answer measurably better?"), bounds (chat apps; two levers: what it has seen, what you hand over), story = our
+own proof, not preaching ("what we do now", never "should"), the spine "Same prompt. Different answer." (holds the
+prompt fixed, which separates this from prompting), three earned words revealed only after they're seen (context rot,
+hallucination, sycophancy: the savvy factor without skills or connectors), guess-then-reveal per proof, honest marketing
+(no fake urgency or social proof). Rebuilt /intro to 6 chapters; `make check-content` bans preaching words and jargon in
+intro copy and fails if an earned word appears before its reveal. *Owner: "Dejargonize; carry through pragmatism; don't
+preach; prove something works better"; "use marketing tactics"; "work around what you have".*
+
+2026-10-07 — /intro motion pass. Skills via `find-skills`: `cinematic-scroll-storytelling` + `scroll-scrubbed-word-reveal`
+(mengto/skills), `scroll-craft` (nateherkai, 3K★, MIT; its encode script and engine not run), `design-motion-principles`
+(kylezantos, 11K installs), `animation-vocabulary` (emilkowalski). GitHub inspiration: ibelick/motion-primitives (text
+scramble), basementstudio/scrollytelling, russellsamora/scrollama. Changes: copy alternates sides per chapter
+(`COPY_SIDE` in chapters.ts; camera targets mirror through the subject; scrims cross-fade sides); chapter titles are
+scroll-scrubbed word by word (reversible); earned words decode into place; evidence plates settle with a spring; the
+hook's looping dots removed (no looped attention motion). Rejected: GSAP/Lenis (Motion already does this; native scroll
+only). *Owner: "animations are still basic … the text and animation can swap positions".*
+
+2026-10-07 — Seminar re-scoped to Claude Code on the web (owner: "a class about teaching the students to use the claude
+code web option … saving time and saving tokens"). 7 chapters; four earned words (token added); meter of tokens resent
+per message (illustrative, brief figures); real numbers from this repo (~3k always loaded vs ~119k on demand, ≈4 chars per
+token); new evidence: Panickssery et al. NeurIPS 2024 (self-preference) for the reviewer chapter; Claude Code docs for
+`/context`, `/compact`, no `/clear` on the web, subagents, parallel cloud sessions. 3D cards are now Claude Code's parts
+(your message, the session so far = accent, CLAUDE.md, skills and tools). Motion: clutter → order (ORDER per chapter;
+copy, plates and 3D cards tilt and scatter early, square up by the close; close cards converge), after motionprompts.dev's
+"Photo Dump Scatter" and "Converging Card Stack". `make check-content`: "token"/"agent" no longer banned; earned words
+are checked against the chapter that reveals them.
+
+2026-10-08 — Rolled back the v4 content re-scope (7 chapters, token meter, new studies, Claude Code-part cards). Restored the
+6-chapter seminar with light Claude Code wording only (chat → session, temporary chat → fresh session; study descriptions
+unchanged). Kept the motion work: clutter → order (ORDER per chapter, chaos jitter on 3D cards, tilted plates), converging
+close, sides swapping, title scrub, word decode. *Owner: "kinda overdid it. I just asked for the animations."*
+Lesson: when asked for animation, change only animation; raise content ideas as questions.
+
+2026-10-09 — From the owner's repo list (impeccable, chrome-devtools-mcp, emilkowalski/skills, taste-skill, hairline, …):
+added `@lucasmarkes/hairline` 0.5.0 (MIT, no dependencies, no install scripts). One figure, `Exploded` (an app window in
+four layers), is the 2D twin of the /intro world: shown under reduced motion instead of the 3D scene, and as the WebGL
+fallback (playing). Themed to the site's tokens (`.hairline-site` in styles.css; lit = accent). Performance pass from a
+production build: the /intro chunk carried three.js (1,081 kB, 308 kB gzip); the World is now lazy-loaded (IntroPage
+147 kB / 58 kB gzip; World 934 kB loads after the text; reduced-motion visitors never fetch it). Not done:
+`review-animations` (user-invocable only); chrome-devtools-mcp (MCP servers load at session start; needs a new session).
+Rejected from the list: shadcn-ui-mcp-server (no shadcn here; standing tool cost), img2threejs (no photographed object),
+awesome-design (link list, stale), addyosmani/agent-skills (overlaps installed skills). ponytail noted as a possible
+seminar exhibit; its −45% token figure is the author's own benchmark, unverified.
+
+2026-10-09 — /intro motion fixes from `/review-animations` (verdict: block). Applied, motion only: the copy column's
+tilt is a static pose (it swung straight/tilted on every scroll past); chapter-title scrub drops the per-word blur
+(opacity + transform only, over WebGL); the pointer lean on the camera is damped (λ 2.5) instead of following the mouse
+raw; the guess question exits in 150 ms and the answer enters in 250 ms (was a hard cut, 450 ms); plates only fade under
+reduced motion; opening title 0.7 s / 4 px blur / 60 ms stagger; close cards stagger 70 ms; rail tick animates `scaleX`,
+not `width`; word slots 300 ms strong ease-out. Motion's x/y/rotate shorthands replaced with transform strings where
+touched. Not done: the `reduce` branches inside World/Blob/Tokens are dead (World never mounts under reduced motion);
+left for a cleanup pass. Hover gating not needed: Tailwind v4's `hover:` is already `@media (hover: hover)`.
+
+2026-10-09 — /intro rebuilt as a stepped talk (v5), from the outside critique (seminar-audit §8, 3/10) and the owner's
+"fix these" (taken as yes to the six recommendations: AI habits taught through Claude Code; Claude Code moves shown, not
+done by the room; clicker/keyboard; adopt the six-beat rebuild; architecture first; 5×5 before class). Nine screens, six
+beats (a test = question screen, then answer screen); each screen is one viewport and snaps on desktop (CSS
+`scroll-snap-type` on `html:has([data-snap])`, ≥1024px), so PageDown/Space/a clicker moves one screen with native
+scroll; nothing listens to keys. No click interactions in the talk: hands up, numeric options. One earned word
+(sycophancy, decoded); context rot is a plain label; hallucination, the GPT-vs-Claude twist, the words HUD, the n = 1
+GPT 5.6 Luna table, clutter → order, title scrub, the blob/tokens/formations/ledger and the grad-site CTA are gone. The
+3D is one beat ("What it reads"): Claude Code's four inputs (your message, the session so far, CLAUDE.md, its own
+instructions; labelled as an illustration) go from a stack to a 2×2 facing the room. Opening and close show the same
+two sessions with the same prompt; the close fills in the answers (CHI 2026) and lists three habits. Projector type:
+evidence ≈ 28px at 1080p, numbers ≥ 64px. Every audience string is in `content/intro.ts` (architecture candidate 2);
+chapter tables (`chapters.ts`, `formations.ts`) are gone, so a screen is one record (candidate 1 by deletion).
+Removed files are kept in the session scratchpad, not the repo. Not verified: scroll snap under real keyboard input (the
+test pane neither snapped programmatic scrolls nor delivered PageDown); in-view animations and the 3D explode run only
+with the pane in front. Rejected: fabricating a "7 vs 4" opening screenshot (the 5×5 isn't run); a keyboard handler for
+stepping (CLAUDE.md: never hijack keys).

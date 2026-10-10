@@ -62,8 +62,8 @@ function Hero() {
               <Link to="/map" className="inline-flex h-11 items-center rounded-control bg-ink px-5 font-medium text-canvas transition-[background-color,transform] duration-150 hover:bg-ink/85 active:scale-[0.97]">
                 Open the map
               </Link>
-              <Link to="/audit" className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
-                Audit your setup
+              <Link to="/intro" className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+                Start with two habits
               </Link>
             </motion.div>
           </div>
