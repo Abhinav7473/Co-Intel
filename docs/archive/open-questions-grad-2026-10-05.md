@@ -1,0 +1,88 @@
+# Grad-site questions from 2026-10-04/05 (archive)
+
+Full text of the questions listed by title in `docs/open-questions.md`. Not loaded by default.
+
+## Questions
+
+### 0. Reframe (2026-10-05): what does the lab actually take home?
+Audience: busy lab members. No one will set up MCPs, maintain a tool, or keep compressed memory files current.
+Corrected by owner (2026-10-05): **the site stays maximalist** — it's tokens we minimize, not visuals.
+"Information system" = **this codebase and its files** (CLAUDE.md, docs/, decisions log, skills, scripts).
+The habits need premise → mechanism → action → fine print, not slogans (rewritten in chat 2026-10-05).
+Open: the four tools are "abstraction voids" (unused, unexplained). README now states purpose + status per tool.
+Decide per tool: re-scope (audit → project instructions; assessment → the habits; experiments → "time one task"),
+keep as presenter-only (knowledge base), or cut.
+
+### 1. Skills — why haven't we been using them?
+We should have started here. Established skills exist for most of what was hand-rolled:
+- Already available in the session, unused: `dataviz` (charts), `code-review`, `simplify`, `security-review`, `run`.
+- Suggested for install (card shown 2026-10-04): **frontend-design**, **Design** (design-critique, accessibility-review,
+  design-system, ux-copy), **code-review**, **Data** (create-viz, data-visualization).
+- **Your call:** which do we install and use for building? Which do you want to *show* in the talk
+  (community skills vs. skills you wrote)?
+
+**Installed 2026-10-04 (all twelve below), into `.agents/skills` + `.claude/skills` symlinks.** Note: the CLI also wrote
+`skills-lock.json` (sources + hashes). It records skill provenance, not package versions — keep it, or does it break your no-lockfile rule?
+
+**Shortlist from `find-skills` (skills.sh, 2026-10-04).** Verified: install count ≥ 1K and source repo stars.
+| Need | Skill | Installs | Repo ★ |
+|---|---|---|---|
+| UI design | `anthropics/skills@frontend-design` | 952K | 180K |
+| Design/a11y review | `vercel-labs/agent-skills@web-design-guidelines` | 697K | 32K |
+| React practice | `vercel-labs/agent-skills@vercel-react-best-practices` | 769K | 32K |
+| Taste / polish | `leonxlnx/taste-skill@design-taste-frontend` | 560K | 92K |
+| Motion | `emilkowalski/skills@emil-design-eng`, `@review-animations`, `@improve-animations` | 320K / 199K / 169K | 43K |
+| Tailwind system | `wshobson/agents@tailwind-design-system` | 67K | 40K |
+| Browser testing | `anthropics/skills@webapp-testing` | 170K | 180K |
+| Plan interrogation | `mattpocock/skills@grill-me` | 1.3M | 276K |
+| Architecture | `mattpocock/skills@improve-codebase-architecture` | 1.0M | 276K |
+| Writing skills (talk + info system) | `anthropics/skills@skill-creator` | 398K | 180K |
+Not found / skipped: no reputable FastAPI or charting skill (session `dataviz` covers charts);
+`currents-dev@playwright-best-practices` has 90K installs but a 388★ repo — treat with caution.
+Install into the repo (not global) so the skills become part of the information system you present:
+`npx skills add <owner/repo@skill> -y` — run inside the node container, like the find step.
+
+### 2. What does the talk show from this site?
+You said: various skills, your information system, and the research. Proposed structure — confirm or correct:
+1. The research (topics, short scenes) — exists.
+2. **Skills**: a page that renders real `SKILL.md` files (yours + community), what triggers them, what they cost in context.
+3. **Information system**: a page that renders this repo's own system live — `CLAUDE.md` (core), `docs/` (reference),
+   `decisions.md` (log), skills, scripts — with token counts per tier.
+4. The tools (audit, assessment, experiments, knowledge base) — keep as live demos, or cut?
+
+### 3. Your information system — what is it, concretely?
+"Which we haven't built yet, practically within the codebase." Options:
+- (a) This repo's own `CLAUDE.md` + `docs/` + log + skills, grown into the reference example you present.
+- (b) A separate example project (e.g. a research-paper workflow) built with the same tiers, shown side by side.
+- (c) Your real personal setup (memory files, skills, connectors), sanitized.
+Which one — and where does your real material live today (folders, tools)?
+
+### 4. Should the site read the information system from the repo?
+If the site renders `CLAUDE.md`, `docs/*.md` and `.claude/skills/*/SKILL.md` directly (imported at build time), the
+talk always shows the true current state and nothing is duplicated. Cost: a markdown renderer and a build step. Yes?
+
+### 5. Audience and format
+Who (the brief mentions a lab of 8), how long, projector or laptops, live demo or walkthrough?
+Do attendees use the tools themselves (needs multi-user thinking) or only watch you?
+
+### 6. Visual assets
+Pending your pick from the asset review: Paper Shaders (mesh gradient hero, liquid-metal logo, pulsing border),
+3D context window (react-three-fiber). Also: links for "Frakt backgrounds" and the Framer components you meant.
+
+### 7. Preview images if the site goes public
+`public/previews/` stores publishers' own og:images (link-preview use, attributed, linked). Fine for a lab talk; if the
+site is deployed publicly, keep them, or switch to title-only cards?
+
+### 8. Animation fixes — which to plan? (`improve-animations` audit, 2026-10-05)
+| # | Sev | Where | Finding | Fix |
+|---|---|---|---|---|
+| 1 | MED | `styles.css` `--ease-spring` on `.range` thumb | Overshoot bezier on a control used constantly | `cubic-bezier(0.23,1,0.32,1)` 160ms |
+| 2 | MED | `features/assess/AssessPage.tsx` step transition 0.35s | Over 300ms on a step you click through 18 times | 200ms ease-out |
+| 3 | MED | `Scene.tsx` compare cards, `OdysseusGrid`, home topic cards | Hover lift `y:-4` — common AI-design tell | border/shadow change only |
+| 4 | LOW | widgets: Radar `scale:0.2`, Trifecta `scale:0.4` | Near-zero scale entrances look like popping | start at 0.95 + opacity |
+| 5 | LOW | ~15 hand-typed springs (stiffness 60–600) | No shared spring tokens | 2–3 named springs in `ui/motion.ts` |
+Missed opportunities: no press feedback on `Button` (scale 0.97, 160ms); KB filter changes jump instead of crossfading.
+
+### 9. Topic 11 says the tools have no users
+True today. After the talk, if people try them, update `build-status` in `deck.ts` (the honest-status list).
+

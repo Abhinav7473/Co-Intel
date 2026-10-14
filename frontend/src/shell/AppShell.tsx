@@ -1,18 +1,24 @@
 import type { ReactNode } from "react";
-import { Link, Outlet } from "@tanstack/react-router";
+import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Backdrop } from "@/ui/Backdrop";
 import { cn } from "@/utils/cn";
 import { CONTAINER } from "./layout";
 import { TopBar } from "./TopBar";
 
 export function AppShell() {
+  // the projected talk owns the whole screen: no site bar, no backdrop
+  const stage = useRouterState({ select: (r) => r.location.pathname === "/intro" });
   return (
     <>
       <a href="#content" className="sr-only z-50 rounded-[10px] bg-ink px-4 py-2 text-canvas focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
         Skip to content
       </a>
-      <Backdrop />
-      <TopBar />
+      {stage ? null : (
+        <>
+          <Backdrop />
+          <TopBar />
+        </>
+      )}
       {/* named so view transitions can animate page content separately from the bar */}
       <div id="content" tabIndex={-1} className="outline-none" style={{ viewTransitionName: "main" }}>
         <Outlet />

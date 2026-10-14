@@ -19,6 +19,7 @@ This file holds only rules that get broken without being told. Detail lives in `
 - Before building anything by hand, check for an established skill/plugin that does it (and say which you used).
   Installed community skills: `.claude/skills/` (symlinks into `.agents/skills/`, provenance in `skills-lock.json`).
   For UI work load `frontend-design`, `design-taste-frontend`, `emil-design-eng`; review with `web-design-guidelines`.
+  For talk or content work, settle the argument first (`grilling`, `made-to-stick`, `teach`), then UI skills.
 - Pin dependency versions exactly. TypeScript stays < 6.1 until typescript-eslint supports 7.
 
 ## Where things are (read only when the task needs it)
@@ -28,7 +29,9 @@ This file holds only rules that get broken without being told. Detail lives in `
 - `docs/dev-env.md` — Docker/watch behaviour, lint, backups, known Compose quirks
 - `docs/target.md` — where it's heading next and which outside libraries to use
 - `docs/open-questions.md` — questions for the owner and known gaps (read at session start; add, don't ask in the site)
-- `docs/decisions.md` — append-only log of decisions and rejected options. Look things up; don't load it whole.
+- `docs/decisions.md` — standing decisions only (relevance + durability). Changing one: edit it, append to the history.
+- `docs/seminar/brief.md` — what the junior talk (/intro) is for; `make check-intro` verifies the page in a real browser
+- `docs/archive/` — decision history, superseded talk versions, old questions. Not loaded unless asked "why".
 
 ## Editing this system
 Edit these files between sessions, by small deltas. Add a decision to the log instead of a new rule here

@@ -61,16 +61,18 @@ then the divider sweeps once. One hand-drawn underline on "what the model sees".
 a CSS-only `grain`. Ideas, not code, from SmoothUI (Focus Blur Resolve, Number Flow) and Componentry (Annotated Text);
 their aurora/prism/dither backgrounds were skipped as generic.
 
-## /intro: a stepped talk (v5, 2026-10-09)
-- One screen per section, snapped on desktop (`[data-snap]` rule in styles.css); a test is two screens (question,
-  answer). Copy left (5fr), evidence right (7fr); the 3D beat gets 4fr/8fr. Nothing tilts; no fades on every section.
-- Projector sizes: body ≈ 28px at 1080p, evidence text `clamp(1.15rem,1.5vw,1.75rem)`, big numbers ≥ 64px, small ≥ 16px.
-- One card style (`CARD` in Panels.tsx): white, hairline ring, one soft shadow, `rounded-panel`.
-- Motion: the opening title resolves once; the yes-man bars grow once; the one earned word decodes. That's all.
-- 3D (three.js via @react-three/fiber + drei), one beat only: four unlit white cards with painted text (site fonts,
-  tokens; 40px titles on a 640px face) go from a stack to a 2×2 facing the room as the screen arrives (`rig.exact`).
-  Accent = the session so far. Reduced motion / no WebGL: Hairline `Exploded` (`Flat.tsx`). The chunk is lazy-loaded.
-- Testing note: a hidden browser pane pauses rAF and IntersectionObserver, so the canvas, bars and decode look stuck there.
+## /intro: editorial poster talk (v6.1, 2026-10-10)
+- 14 full-screen sections, snapped at ≥ 1024px; no top bar, rail or backdrop (AppShell hides them on /intro);
+  `STAGE` (full width, 6vw gutters). Flat `surface` ground.
+- Seven screen kinds, each with its own composition (Panels.tsx): split (opening and close, mirrored), diagram, list
+  (ruled table), ask (poster question + bare numerals), answer (finding as a poster sentence, number in warn), do
+  (habit left, typed artifact on a `sunken` sheet right), steps (three numbered columns).
+- Type: STATEMENT, HEAD, BODY, META (+ MONO for typed text), all `clamp(…, min(vw, vh), …)`.
+- Context strip (`Strip`, fixed bottom, height `--strip`): segments own/notes/tools/session/message as flex-grow
+  (700ms transition); `dim` greys the session's middle (test 1) or the notes' last 32% (test 2). Doubles as progress.
+- Colour jobs: accent = session + earned words; warn = failure numbers, "No"; series-b = skills; ink otherwise.
+- Motion: opening title resolves once; strip segments resize; CHI bars grow once; the earned word decodes.
+- Testing: `make check-intro`. The desktop app's hidden browser pane pauses rAF and IntersectionObserver.
 
 ## Borrowed ideas (MIT, rewritten without effects)
 Kokonut UI: spotlight cards → `ui/Spotlight`. The scrubber adapts the cursor-scrub idea from a pasted generator spec (no assets used). Charts are our own small

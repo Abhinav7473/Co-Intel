@@ -1,175 +1,272 @@
 /**
- * The junior seminar (/intro): "Same prompt. Different answer.", 15 minutes for UX juniors learning Claude Code on the web.
- * Six beats, one screen each (a test is two screens: the question, then the answer), so PageDown or a clicker advances
- * one screen at a time. Every word the room reads lives here, so `make check-content` sees all of it.
- * Rules (make check-content): no preaching words; no jargon; an earned word never appears before the screen that
- * reveals it; every number names its study. Outline and reasons: docs/seminar-audit.md §8, docs/decisions.md 2026-10-09.
+ * The junior seminar (/intro). Brief: docs/seminar/brief.md. Every word the room reads lives here, so
+ * `make check-content` sees all of it (no preaching words, no jargon, earned words only after their reveal).
+ * One idea per screen, about 50 words at most. A test is three screens: the question, the answer, what we do now.
+ * PageDown or a clicker moves one screen. The context strip at the bottom shows what each screen's session carries.
  */
-export type ScreenId = "hook" | "reads" | "rot-ask" | "rot" | "yes-ask" | "yes" | "learn-ask" | "learn" | "close";
+export type ScreenId =
+  | "hook"
+  | "carries"
+  | "toolkit"
+  | "rot-ask"
+  | "rot"
+  | "rot-do"
+  | "rules-ask"
+  | "rules"
+  | "rules-do"
+  | "review-ask"
+  | "review"
+  | "review-do"
+  | "tonight"
+  | "close";
+
+/** How a screen is composed. Each kind has its own layout in Panels/IntroPage. */
+export type ScreenKind = "split" | "diagram" | "list" | "ask" | "answer" | "do" | "steps";
 
 export interface IntroScreen {
   id: ScreenId;
-  /** the beat this screen belongs to; the rail shows beats, not screens */
-  beat: number;
+  kind: ScreenKind;
+  /** label shown by the context strip (neutral, so it doesn't give a test's answer away) */
+  beat: string;
   title: string;
   body: string;
 }
 
 export const TAGLINE = "Same prompt. Different answer.";
 
-/** One prompt, used word for word everywhere it appears. */
-export const PROMPT = "Rate this design rationale from 1 to 10, then list its three biggest weaknesses.";
-
-/** Rail labels per beat. Neutral, so they don't give a test's answer away. */
-export const BEATS = ["Same prompt", "What it reads", "Test 1", "Test 2", "Test 3", "Your turn"] as const;
+/** One prompt, word for word wherever it appears: the crit question students run on their own project tonight. */
+export const PROMPT = "Read this project and list the three weakest points a crit panel would raise. Point to the files.";
 
 export const SCREENS: IntroScreen[] = [
   {
     id: "hook",
-    beat: 0,
+    kind: "split",
+    beat: "Same prompt",
     title: TAGLINE,
-    body: "Everyone is learning to write better prompts. We kept the prompt identical, word for word, and changed what Claude Code had around it.",
+    body: "Two Claude Code sessions get the same prompt, word for word. They won’t agree, because of what each one carries around it.",
   },
   {
-    id: "reads",
-    beat: 1,
-    title: "Every time you hit send, it rereads everything",
-    body: "It keeps nothing between messages. Claude Code sends the whole session again, your project's notes, and its own instructions. Change those, and the answer changes.",
+    id: "carries",
+    kind: "diagram",
+    beat: "What it rereads",
+    title: "Every message, it rereads everything",
+    body: "It keeps nothing between messages. Each time you hit send, all of this goes again, and the session part keeps growing.",
+  },
+  {
+    id: "toolkit",
+    kind: "list",
+    beat: "Your toolkit",
+    title: "Six tools, each with a trigger",
+    body: "Add one when its trigger happens, not before. On the web, a session has whatever is committed to your repo.",
   },
   {
     id: "rot-ask",
-    beat: 2,
-    title: "An hour-old session vs a fresh one",
-    body: "Same question in both. One holds every old draft. The other gets a five-line note. Out of 18 AI models, how many did better with the whole history?",
+    kind: "ask",
+    beat: "Test 1",
+    title: "Of 18 models, how many did better with the whole history?",
+    body: "Same question, asked in an hour-old session full of drafts, and in a fresh one that only got a five-line note.",
   },
   {
     id: "rot",
-    beat: 2,
-    title: "None of them",
-    body: "Every one of the 18 answered better from the short, focused version. More history made every model worse, even with the right answer in there.",
+    kind: "answer",
+    beat: "Test 1",
+    title: "None of them.",
+    body: "All 18 answered better from the short version. In a long input, models use the start and the end best, and the middle least.",
   },
   {
-    id: "yes-ask",
-    beat: 3,
-    title: "Does a session that knows you go easy on you?",
-    body: "A weak design rationale, scored by a model that knows you and by one that doesn't. Once it knows you, how much more often does it side with you?",
+    id: "rot-do",
+    kind: "do",
+    beat: "Test 1",
+    title: "New task, new session, with a five-line note",
+    body: "Running long mid-task? Compact it, and say what to keep.",
   },
   {
-    id: "yes",
-    beat: 3,
-    title: "Up to 45% more often",
-    body: "Researchers replayed two weeks of real chats from 38 people, with and without what the model knew about them. Three of four models sided with the person more.",
+    id: "rules-ask",
+    kind: "ask",
+    beat: "Test 2",
+    title: "At 500 instructions, what share did the best model follow?",
+    body: "Researchers gave 20 models between 10 and 500 instructions at once, and counted how many were followed.",
   },
   {
-    id: "learn-ask",
-    beat: 4,
-    title: "Does it help you learn, or just finish?",
-    body: "52 people learned a new coding library, half with AI help, then took the same quiz without it. Who scored higher, and by how much?",
+    id: "rules",
+    kind: "answer",
+    beat: "Test 2",
+    title: "68%, and the later ones go first.",
+    body: "The rest were skipped without a word. A longer instruction file quietly loses instructions.",
   },
   {
-    id: "learn",
-    beat: 4,
-    title: "By hand 67%. With AI 50%.",
-    body: "How they used it decided it. The ones who asked it to explain kept up. The ones who let it do the work fell behind.",
+    id: "rules-do",
+    kind: "do",
+    beat: "Test 2",
+    title: "Write CLAUDE.md yourself, and keep it short",
+    body: "In a second study, notes written by AI were the one kind that made results worse. Add a line only when it gets something wrong twice.",
+  },
+  {
+    id: "review-ask",
+    kind: "ask",
+    beat: "Test 3",
+    title: "Once a model knows you, how much more does it side with you?",
+    body: "The session that helped you write it knows you, your drafts and your effort. Now it reviews your work.",
+  },
+  {
+    id: "review",
+    kind: "answer",
+    beat: "Test 3",
+    title: "Up to 45% more often.",
+    body: "Researchers replayed real chats from 38 people, with and without what the model knew about them.",
+  },
+  {
+    id: "review-do",
+    kind: "do",
+    beat: "Test 3",
+    title: "Get reviews from a fresh session",
+    body: "Or a subagent, with your criteria pasted in. Models also rate their own writing above equally good writing by others.",
+  },
+  {
+    id: "tonight",
+    kind: "steps",
+    beat: "Tonight",
+    title: "Tonight, on your own project",
+    body: "Three steps, about fifteen minutes.",
   },
   {
     id: "close",
-    beat: 5,
-    title: "Design the screen that shows what it's reading",
-    body: "You will design these apps. One minute, on paper: sketch one signal that tells a person their session is stale, or flattering them.",
+    kind: "split",
+    beat: "Same prompt",
+    title: TAGLINE,
+    body: "Now you know what changes the answer, and it isn’t the prompt.",
   },
 ];
 
 /** Hands-up options on a question screen: said aloud, counted by the presenter, never clicked. */
-export const ASK: Record<"rot-ask" | "yes-ask" | "learn-ask", readonly string[]> = {
+export const ASK: Record<"rot-ask" | "rules-ask" | "review-ask", readonly string[]> = {
   "rot-ask": ["0", "6", "12", "18"],
-  "yes-ask": ["Not at all", "About 15% more", "About 45% more"],
-  "learn-ask": ["With AI", "By hand", "No difference"],
+  "rules-ask": ["30%", "70%", "95%"],
+  "review-ask": ["None", "15%", "45%"],
 };
-export const HANDS = "Hands up";
+export const HANDS = "Hands up.";
 
-/** The two sessions on the opening screen, back at the close with their answers. */
+/** The opening and the close: the same prompt in two sessions. The close fills in what each one does. */
 export const SESSIONS = {
-  known: { name: "The session you've worked in all week", answer: "Sides with you more often" },
-  fresh: { name: "A fresh session", answer: "Judges only the text in front of it" },
-  lead: "Both sessions get the same prompt:",
-  hidden: "Which one goes easier on you? Test 2.",
+  lead: "Both get the same prompt",
+  known: { name: "The session you’ve worked in all week", answer: "Sides with you more often" },
+  fresh: { name: "A fresh session, with your criteria", answer: "Judges only what’s in front of it" },
+  hidden: "Which one goes easier on you? You’ll see.",
 } as const;
 
-/** The exploded view on the "reads" screen. The parts are real; the text on them is ours. */
-export const LAYERS = [
-  { key: "message", name: "Your message", lines: [] as string[] },
-  { key: "session", name: "The session so far", lines: ["Drafts 1, 2 and 3", "“I spent all week on this!”"] },
-  { key: "notes", name: "CLAUDE.md: project notes", lines: ["Checkout case study", "Crit on Friday"] },
-  { key: "instructions", name: "Its own instructions", lines: ["Written by Anthropic", "Hidden from you"] },
+/** The parts of what every message carries, in strip order. Shares are illustrative; the diagram says so. */
+export const PARTS = [
+  { key: "own", name: "Its own instructions", loads: "Every message" },
+  { key: "notes", name: "CLAUDE.md, your notes", loads: "Every message, in full" },
+  { key: "tools", name: "Skills and connectors", loads: "One line each, until used" },
+  { key: "session", name: "The session so far", loads: "Grows with every message" },
+  { key: "message", name: "Your message", loads: "The part you see" },
 ] as const;
-export const LAYERS_NOTE = "Illustration. The four parts are real; the text on them is ours.";
+export type PartKey = (typeof PARTS)[number]["key"];
 
-/** The two words. Context rot is named in test 1, sycophancy is the one earned in test 2. */
+export const CARRY = {
+  rows: [
+    { label: "Message 1", session: 0.04 },
+    { label: "Message 10", session: 0.42 },
+    { label: "Message 40", session: 0.74 },
+  ],
+  note: "Illustration: the parts are real, the sizes are not to scale.",
+  see: "See your own: type /context in a session.",
+} as const;
+
+/**
+ * The context strip per screen: the talk itself as one growing session. `notes`/`session` are shares of the bar;
+ * `dim` greys part of a segment (the middle of a long session; the instructions a long file loses).
+ */
+export const STRIP: Record<ScreenId, { notes: number; session: number; dim?: "middle" | "notes-tail" }> = {
+  hook: { notes: 0.06, session: 0.06 },
+  carries: { notes: 0.06, session: 0.14 },
+  toolkit: { notes: 0.06, session: 0.22 },
+  "rot-ask": { notes: 0.06, session: 0.5 },
+  rot: { notes: 0.06, session: 0.62, dim: "middle" },
+  "rot-do": { notes: 0.06, session: 0.03 },
+  "rules-ask": { notes: 0.3, session: 0.08 },
+  rules: { notes: 0.46, session: 0.1, dim: "notes-tail" },
+  "rules-do": { notes: 0.07, session: 0.12 },
+  "review-ask": { notes: 0.07, session: 0.6 },
+  review: { notes: 0.07, session: 0.66 },
+  "review-do": { notes: 0.07, session: 0.03 },
+  tonight: { notes: 0.07, session: 0.02 },
+  close: { notes: 0.07, session: 0.02 },
+};
+export const STRIP_LABEL = "What this message carries";
+
+/** The toolkit, from the Claude Code docs: what each tool is, its trigger, and whether a web session has it. */
+export const TOOLS = [
+  { name: "CLAUDE.md", is: "Notes read every message", when: "It gets your project wrong twice", web: true },
+  { name: "Skill", is: "Steps loaded only when needed", when: "You paste the same steps a third time", web: true },
+  { name: "Connector (MCP)", is: "Live access to Figma, Drive, GitHub", when: "You copy from a tab it can’t see", web: true },
+  { name: "Subagent", is: "A fresh helper that reports back", when: "A side task would flood the session", web: true },
+  { name: "Hook", is: "A script on every matching event", when: "It has to happen every time", web: true },
+  { name: "Plugin", is: "A bundle of the above", when: "A second project needs the same setup", web: false },
+] as const;
+export const TOOLS_HEAD = { name: "Tool", is: "What it is", when: "Reach for it when", web: "On the web" } as const;
+export const WEB = { yes: "Yes", no: "No" } as const;
+
+/** The two words. Context rot is named in test 1; sycophancy is the one earned, in test 3. */
 export const WORDS = [
   { word: "context rot", revealIn: "rot", means: "The longer and messier the session, the worse the answers." },
-  { word: "sycophancy", revealIn: "yes", means: "Agreeing with you to keep you happy." },
+  { word: "sycophancy", revealIn: "review", means: "Agreeing with you to keep you happy." },
 ] as const;
-export const NAMED = "This has a name.";
-export const NOW = "What we do now: ";
+export const NAMED = "This has a name:";
 
-/** Test 1. Chroma, Context Rot (2025). */
+/** Test 1 artifacts. */
 export const ROT = {
-  big: "0 of 18",
-  bigLabel: "models did better with the whole history",
-  practice: "New task, new session, with a five-line note on where we are.",
   noteTitle: "A new session, first message",
-  note: [
-    "Project: checkout redesign case study",
-    "Done: drafts 1 to 3. Draft 3 is current",
-    "Now: tighten the evidence section",
-    "Criteria: Nielsen's 10 heuristics",
-    "Ignore: anything from drafts 1 and 2",
-  ],
-  caveat: "In the study, the focused version was picked by hand. A five-line note is our way of doing that.",
-  source: "Chroma, Context Rot (2025): 18 models, 306 questions about long chat histories",
-  href: "https://www.trychroma.com/research/context-rot",
+  note: ["Project: checkout redesign case study", "Done: drafts 1 to 3. Draft 3 is current", "Now: tighten the evidence section", "Criteria: Nielsen’s 10 heuristics", "Ignore: anything from drafts 1 and 2"],
+  compactTitle: "Running long, mid-task",
+  compact: "/compact keep the criteria and draft 3",
 } as const;
 
-/** Test 2. Jain et al., CHI 2026. */
-export const YESMAN = {
-  rationale: "We moved checkout onto a single page because users hate multi-step forms. In our test, all 5 participants finished faster, so the redesign will raise conversion.",
-  promptLead: "The prompt, identical in both:",
+/** Test 2 artifact. */
+export const RULES = {
+  fileTitle: "CLAUDE.md, written by hand",
+  file: [
+    "# Checkout redesign case study",
+    "For Prof. Ramtin’s UX class. Crit on Friday.",
+    "Criteria: Nielsen’s 10 heuristics.",
+    "Current draft: case-study/draft-3.md",
+    "Evidence: research/, 5 interviews so far.",
+    "Ask before rewriting my words.",
+  ],
+} as const;
+
+/** Test 3: the per-model result and the criteria pasted into a fresh session. */
+export const REVIEW = {
+  rowsLead: "How much more often each model sided with the person, once it knew them",
   rows: [
     { model: "Gemini 2.5 Pro", more: 45 },
     { model: "Claude Sonnet 4", more: 33 },
     { model: "GPT-4.1 Mini", more: 16 },
     { model: "GPT 5.1", more: 0 },
   ],
-  rowsLead: "How much more often each model sided with the person, once it knew them",
-  bridge: "In Claude Code, what knows you is the session itself: every draft, every “I spent all week on this one.”",
-  practice: "Reviews happen in a fresh session, with our criteria pasted in:",
-  criteria: "Check this against Nielsen's 10 usability heuristics. Name the weakest point first.",
-  source: "Jain et al., CHI 2026: two weeks of real chats from 38 people, replayed with and without a saved profile",
-  href: "https://dl.acm.org/doi/10.1145/3772318.3791915",
+  zero: "no change",
+  criteriaTitle: "Pasted into a fresh session",
+  criteria: "Check this against Nielsen’s 10 usability heuristics. Name the weakest point first.",
 } as const;
 
-/** Test 3. Anthropic (2026), programming only. */
-export const LEARNING = {
-  withAi: 50,
-  byHand: 67,
-  scoreLabel: "average quiz score",
-  withAiLabel: "learned with AI",
-  byHandLabel: "learned by hand",
-  explain: "65–86%",
-  explainLabel: "asked it to explain",
-  delegate: "under 40%",
-  delegateLabel: "let it do the work",
-  caveat: "Programming only. Applying it to design work is a reasonable guess, not a finding.",
-  practice: "When we're learning, we ask why before we ask for the fix:",
-  ask: "Explain why this layout breaks before you change anything.",
-  source: "Anthropic, 2026: 52 people learned an unfamiliar coding library, randomly with or without AI, then took the same quiz without it",
-  href: "https://www.anthropic.com/research/AI-assistance-coding-skills",
-} as const;
-
-/** The close: three habits, one per test. */
-export const HABITS = [
-  { test: "Test 1", habit: "New task, new session, with a five-line note." },
-  { test: "Test 2", habit: "Reviews in a fresh session, with your criteria pasted in." },
-  { test: "Test 3", habit: "Learning? Ask why before you ask for the fix." },
+/** Tonight: three steps on their own project. */
+export const STEPS = [
+  { step: "Open it", text: "Put your class project in a GitHub repo and open it at claude.ai/code." },
+  { step: "Write the notes", text: "A ten-line CLAUDE.md, by you: what it is, who it’s for, your criteria, where the draft lives." },
+  { step: "Ask twice", text: "The crit question in the session you’ve worked in, then in a fresh one. Compare." },
 ] as const;
+
+/** One source line per screen, shown in the footer. */
+export const SOURCES: Partial<Record<ScreenId, readonly { text: string; href: string }[]>> = {
+  carries: [{ text: "Claude Code docs: Extend Claude Code, context costs by feature", href: "https://code.claude.com/docs/en/features-overview" }],
+  toolkit: [{ text: "Claude Code docs: Extend Claude Code; Cloud environments, what carries over", href: "https://code.claude.com/docs/en/cloud-environments" }],
+  rot: [
+    { text: "Chroma, Context Rot (2025): 18 models, 306 questions", href: "https://www.trychroma.com/research/context-rot" },
+    { text: "Liu et al., Lost in the Middle (TACL 2024)", href: "https://arxiv.org/abs/2307.03172" },
+  ],
+  rules: [{ text: "Jaroslawicz et al., How Many Instructions Can LLMs Follow at Once? (IFScale, 2025)", href: "https://arxiv.org/pdf/2507.11538" }],
+  "rules-do": [{ text: "ETH Zurich, Evaluating AGENTS.md (2026)", href: "https://arxiv.org/abs/2602.11988" }],
+  review: [{ text: "Jain et al., CHI 2026: real chats from 38 people, replayed with and without a saved profile", href: "https://dl.acm.org/doi/10.1145/3772318.3791915" }],
+  "review-do": [{ text: "Panickssery, Bowman & Feng, LLM Evaluators Recognize and Favor Their Own Generations (2024)", href: "https://arxiv.org/abs/2404.13076" }],
+};

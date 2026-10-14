@@ -6,7 +6,7 @@ PROD := $(COMPOSE) --profile prod
 STAMP := $(shell date +%Y%m%d-%H%M%S)
 
 .DEFAULT_GOAL := help
-.PHONY: help dev prod down logs ps psql migrate revision backup restore lint fmt check-content previews facts nuke
+.PHONY: help dev prod down logs ps psql migrate revision backup restore lint fmt check-content check-intro previews facts nuke
 
 help: ## Show targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
@@ -59,6 +59,11 @@ facts: ## Re-read CLAUDE.md, docs/, the decision log and skills → content/buil
 
 previews: ## Fetch link-preview images for every cited source → frontend/public/previews + content/previews.json
 	$(DEV) run --rm --no-deps -T -v ./frontend/src:/app/src -v ./frontend/scripts:/app/scripts -v ./frontend/public:/app/public web-dev node scripts/fetch-previews.ts
+
+check-intro: ## Headless Chromium on the running dev site: /intro screens fit 1080p/720p, PageDown lands, no errors (screenshots in .shots/)
+	@mkdir -p .shots
+	docker run --rm --add-host=host.docker.internal:host-gateway -v ./scripts:/pw:ro -v ./.shots:/out \
+	  mcr.microsoft.com/playwright/python:v1.55.0-noble sh -c "pip install -q --break-system-packages playwright==1.55.0 >/dev/null 2>&1 && python -I /pw/check_intro.py"
 
 lint: ## ESLint + tsc (frontend) and Ruff (backend) on your current files, inside containers
 	$(NODE) npx eslint .

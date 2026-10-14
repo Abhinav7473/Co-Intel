@@ -9,7 +9,7 @@ Dev: nginx proxies everything else to Vite (HMR). Prod: nginx serves the built S
 | Path | Page | Purpose |
 |---|---|---|
 | `/` | `features/home/HomePage` | Hero with context scrubber + its guide, status, theme map, tools, sources |
-| `/intro` | `features/intro/IntroPage` | The junior seminar as a stepped talk: 9 screens / 6 beats from `content/intro.ts` (all copy), `Panels` per screen, one 3D beat (`World`, lazy), `conductor.ts` for the rail |
+| `/intro` | `features/intro/IntroPage` | The junior seminar (brief: `docs/seminar/brief.md`): 14 screens of 7 kinds from `content/intro.ts`; `Panels` renders each kind and the context strip; no site chrome |
 | `/map` | `features/map/MapPage` | The theme map: "You are here", every topic and scene one click away, tools |
 | `/topics/$slug` | `features/topic/TopicPage` | One topic in its theme hue: mini-map rail, scenes, your entries, "Where next" |
 | `/audit`, `/audit/$id` | `features/audit/*` | Paste setup → live report → save; saved report + diff vs previous |
@@ -23,10 +23,11 @@ View Transitions API with types (see `docs/design.md`).
 ## Frontend (`frontend/src`)
 | Folder | Holds |
 |---|---|
-| `content/` | Data only: `brief.ts` (topics), `deck.ts` (scenes), `data.ts` (widget datasets), `assessment.ts`, `experiments.ts`, `tools.ts` |
+| `content/` | Data only: `brief.ts` (topics), `deck.ts` (scenes), `data.ts` (widget datasets), `takeaways.ts`, `outline.ts`, `assessment.ts`, `experiments.ts`, `tools.ts`, `intro.ts` (all /intro copy) |
 | `features/<page>/` | One folder per route group; pure logic next to it (`audit/analyze.ts`, `experiments/compare.ts`) |
 | `features/map/` | `position.ts` (where the reader is + visited scenes: external store, localStorage, IntersectionObserver ref callback), `MapParts` (ThemeMap, MiniMap rail, HerePill, SceneChips, Emblem) |
 | `features/widgets/` | Interactive explainers used inside topic scenes, registered by id |
+| `features/intro/` | `IntroPage` (sections), `Panels` (screen kinds + `Strip`), `conductor.ts` (scroll → active screen) |
 | `shell/` | `AppShell` (backdrop, top bar, `Page` frame), `TopBar`, `layout.ts` |
 | `ui/` | Shared primitives: `LiquidGlass`, `Panel`, `Button`, `Segmented`, `Toggle`, `Slider`, `Spotlight`, `FlowPaths`, `SourceCards`, `charts/` |
 | `hooks/` | Query hooks per resource + `useElementSize` |
@@ -34,6 +35,8 @@ View Transitions API with types (see `docs/design.md`).
 
 Topic 11 reads `content/build-facts.json`, produced by `make facts` (`scripts/build-facts.ts` reads the repo root read-only);
 rerun after editing CLAUDE.md, docs/ or the decision log. `/experiments?template=<key>` opens a template's form.
+
+Root `scripts/check_intro.py` is run by `make check-intro` (Playwright in Docker, against the running dev site).
 
 Every page is a lazy route chunk (`lazyRouteComponent`). Source preview cards read `content/previews.json` + images in
 `public/previews/`, both produced by `make previews` (`scripts/fetch-previews.ts`, open-graph-scraper; rerun after adding

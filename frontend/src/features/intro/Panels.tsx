@@ -1,137 +1,382 @@
-import { lazy, Suspense, useState, type ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { ASK, HABITS, HANDS, LEARNING, NAMED, NOW, PROMPT, ROT, SESSIONS, TAGLINE, WORDS, YESMAN, type ScreenId } from "@/content/intro";
+import {
+  ASK,
+  CARRY,
+  HANDS,
+  NAMED,
+  PARTS,
+  PROMPT,
+  REVIEW,
+  ROT,
+  RULES,
+  SCREENS,
+  SESSIONS,
+  SOURCES,
+  STEPS,
+  STRIP,
+  STRIP_LABEL,
+  TOOLS,
+  TOOLS_HEAD,
+  WEB,
+  WORDS,
+  type IntroScreen,
+  type PartKey,
+} from "@/content/intro";
+import { STAGE } from "@/shell/layout";
 import { cn } from "@/utils/cn";
-import { Flat } from "./Flat";
-
-// three.js is ~1 MB: load it only for the one beat that uses it, and never for reduced-motion visitors
-const World = lazy(() => import("./World").then((m) => ({ default: m.World })));
+import { useActiveChapter } from "./conductor";
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
-/* Projector sizes: evidence ≥ ~22px at 1080p, numbers ≥ 64px. One card style, flat, never tilted. */
-const CARD = "rounded-panel bg-surface p-6 ring-1 ring-line shadow-[0_1px_2px_rgb(22_24_29/0.06),0_18px_40px_-24px_rgb(22_24_29/0.3)] lg:p-8";
-const TEXT = "text-[clamp(1.15rem,1.5vw,1.75rem)] leading-snug";
-const SMALL = "text-[clamp(1rem,1.05vw,1.25rem)] leading-snug text-mute";
-const BIG = "font-display font-semibold leading-none tracking-[-0.03em] tabular-nums";
+/*
+ * Editorial poster type: four sizes, each scaled by the smaller of width and height so a screen fits a 1280×720
+ * projector as well as 1920×1080. Statement ≈ 127px and body ≈ 33px at 1080p (the poster scale is deliberate: this is
+ * read from the back of a room). Mono only for things you type.
+ */
+const STATEMENT = "font-display font-semibold leading-[0.98] tracking-[-0.03em] text-balance text-[clamp(2.75rem,min(6.6vw,11.8vh),8.5rem)]";
+const HEAD = "font-display font-semibold leading-[1.02] tracking-[-0.028em] text-balance text-[clamp(2rem,min(4.2vw,7.4vh),5rem)]";
+const BODY = "text-[clamp(1.15rem,min(1.75vw,3.1vh),2.05rem)] leading-[1.35] text-pretty";
+const META = "text-[clamp(1rem,min(1vw,1.8vh),1.2rem)] leading-snug text-mute";
+const MONO = "font-mono text-[clamp(0.95rem,min(1.4vw,2.5vh),1.65rem)] leading-[1.55]";
+/** A typed artifact: sunken, flat, one radius; never a shadowed card. */
+const SHEET = "rounded-panel bg-sunken px-[2.2vw] py-[3vh]";
 
-export function Panel({ id }: { id: ScreenId }) {
-  switch (id) {
-    case "hook":
-      return <Sessions />;
-    case "reads":
-      return <Reads />;
-    case "rot-ask":
-    case "yes-ask":
-    case "learn-ask":
-      return <Ask id={id} />;
-    case "rot":
-      return <Rot />;
-    case "yes":
-      return <YesMan />;
-    case "learn":
-      return <Learn />;
-    case "close":
-      return <Close />;
+/* ------------------------------------------------------------------ the context strip */
+
+/** Fixed shares of every bar (illustrative). `notes` and `session` come from the screen. */
+const FIXED = { own: 0.05, tools: 0.03, message: 0.015 } as const;
+const FILL: Record<PartKey, string> = {
+  own: "bg-ink/20",
+  notes: "bg-ink/60",
+  tools: "bg-series-b",
+  session: "bg-accent",
+  message: "bg-ink",
+};
+const GROW = "transition-[flex-grow,opacity] duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]";
+
+/**
+ * One bar of what a message carries, as flex segments that resize smoothly when the values change. `dim` greys the
+ * middle of the session (lost in the middle) or the tail of the notes (instructions a long file loses).
+ */
+function Bar({ notes, session, dim, className }: { notes: number; session: number; dim?: "middle" | "notes-tail"; className?: string }) {
+  const share: Record<PartKey, number> = { ...FIXED, notes, session };
+  const rest = Math.max(0, 1 - Object.values(share).reduce((a, b) => a + b, 0));
+  return (
+    <div className={cn("flex gap-[2px] overflow-hidden rounded-[4px]", className)} aria-hidden>
+      {PARTS.map((p) => (
+        <div key={p.key} className={cn("flex gap-[2px]", GROW)} style={{ flexGrow: share[p.key], flexBasis: 0 }}>
+          {/* split a segment only when part of it dims; otherwise one solid block (small splits read as stripes) */}
+          {p.key === "session" && dim === "middle" ? (
+            [0, 1, 2].map((k) => <span key={k} className={cn("flex-1", FILL.session, GROW, k === 1 && "opacity-25")} />)
+          ) : p.key === "notes" && dim === "notes-tail" ? (
+            <>
+              <span className={cn(FILL.notes, GROW)} style={{ flexGrow: 68, flexBasis: 0 }} />
+              <span className={cn(FILL.notes, GROW, "opacity-20")} style={{ flexGrow: 32, flexBasis: 0 }} />
+            </>
+          ) : (
+            <span className={cn("flex-1", FILL[p.key])} />
+          )}
+        </div>
+      ))}
+      <div className={cn("bg-ink/[0.06]", GROW)} style={{ flexGrow: rest, flexBasis: 0 }} />
+    </div>
+  );
+}
+
+/** Pinned to the bottom of every screen: the talk as one session that grows, rots, and starts fresh. Also progress. */
+export function Strip() {
+  const i = useActiveChapter();
+  const s = SCREENS[i] ?? SCREENS[0]!;
+  const v = STRIP[s.id];
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface">
+      <div className={cn(STAGE, "py-[1.4vh]")}>
+        <div className={cn(META, "mb-[0.8vh] flex justify-between gap-4 whitespace-nowrap tabular-nums")}>
+          <span className="truncate">
+            <span className="max-sm:hidden">{STRIP_LABEL} · </span>
+            <span className="text-ink">{s.beat}</span>
+          </span>
+          <span>
+            {i + 1} / {SCREENS.length}
+          </span>
+        </div>
+        <Bar notes={v.notes} session={v.session} dim={v.dim} className="h-[clamp(12px,2.2vh,24px)]" />
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ screens */
+
+export function Screen({ s, i }: { s: IntroScreen; i: number }) {
+  const Title = i === 0 ? "h1" : "h2";
+  const id = `${s.id}-title`;
+  switch (s.kind) {
+    case "split":
+      return <Split s={s} Title={Title} id={id} />;
+    case "diagram":
+      return <Diagram s={s} id={id} />;
+    case "list":
+      return <Toolkit s={s} id={id} />;
+    case "ask":
+      return <Ask s={s} id={id} />;
+    case "answer":
+      return <Answer s={s} id={id} />;
+    case "do":
+      return <Do s={s} id={id} />;
+    case "steps":
+      return <Steps s={s} id={id} />;
   }
 }
 
-function Source({ text, href }: { text: string; href: string }) {
+function Copy({ s, id, className }: { s: IntroScreen; id: string; className?: string }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className={cn(SMALL, "mt-5 flex items-start gap-1.5 hover:text-ink")}>
-      <span>{text}</span>
-      <ArrowUpRight className="mt-1 size-4 shrink-0" aria-hidden />
-    </a>
-  );
-}
-
-/** "What we do now", plus the exact thing typed into Claude Code. */
-function Practice({ lead, typed }: { lead: string; typed?: string }) {
-  return (
-    <div className="mt-6">
-      <p className={TEXT}>
-        <span className="font-medium text-accent">{NOW}</span>
-        {lead}
-      </p>
-      {typed ? <Bubble className="mt-3">{typed}</Bubble> : null}
+    <div className={className}>
+      <h2 id={id} className={HEAD}>
+        {s.title}
+      </h2>
+      <p className={cn(BODY, "mt-[3vh] max-w-[38ch] text-ink/85")}>{s.body}</p>
     </div>
   );
 }
 
-function Bubble({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn("w-fit max-w-full rounded-[18px] rounded-br-[6px] bg-ink px-5 py-3 text-canvas", TEXT, className)}>{children}</div>;
+/** Sources, one line, pinned above the strip: there for anyone checking, out of the way of the room. */
+export function Sources({ id }: { id: IntroScreen["id"] }) {
+  const list = SOURCES[id];
+  if (!list) return null;
+  return (
+    <p className={cn(META, "absolute bottom-[calc(var(--strip)+1.6vh)] left-[6vw] right-[6vw]")}>
+      {list.map((x, k) => (
+        <span key={x.href}>
+          {k ? " · " : null}
+          <a href={x.href} target="_blank" rel="noreferrer" className="underline decoration-line-strong underline-offset-4 hover:text-ink">
+            {x.text}
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+        </span>
+      ))}
+    </p>
+  );
 }
 
-/* ------------------------------------------------------------------ hook / close */
+/* split: the opening, and the close that mirrors it with the answers filled in */
+function Split({ s, Title, id }: { s: IntroScreen; Title: "h1" | "h2"; id: string }) {
+  const reduce = useReducedMotion();
+  const answered = s.id === "close";
+  const words = s.title.split(" ");
+  return (
+    <div className="grid items-center gap-[6vh] lg:grid-cols-12 lg:gap-x-[4vw]">
+      <div className="lg:col-span-6">
+        <Title id={id} aria-label={s.title} className={STATEMENT}>
+          {words.map((w, k) => (
+            <motion.span
+              key={`${w}-${k}`}
+              aria-hidden
+              className="inline-block"
+              initial={reduce || answered ? false : { opacity: 0, transform: "translateY(0.2em)", filter: "blur(4px)" }}
+              animate={{ opacity: 1, transform: "translateY(0em)", filter: "blur(0px)" }}
+              transition={{ duration: 0.7, delay: 0.15 + k * 0.06, ease: EASE }}
+            >
+              {w}
+              {k < words.length - 1 ? " " : null}
+            </motion.span>
+          ))}
+        </Title>
+        <p className={cn(BODY, "mt-[3vh] max-w-[30ch] text-ink/85")}>{s.body}</p>
+      </div>
+      <div className="lg:col-span-6">
+        <p className={META}>{SESSIONS.lead}</p>
+        <p className={cn(MONO, "mt-[1vh] rounded-panel bg-ink px-[2vw] py-[2.4vh] text-canvas")}>{PROMPT}</p>
+        <div className="mt-[4vh] grid grid-cols-2 gap-[3vw]">
+          {[
+            { ...SESSIONS.known, bar: { notes: 0.07, session: 0.66 } },
+            { ...SESSIONS.fresh, bar: { notes: 0.07, session: 0.03 } },
+          ].map((x) => (
+            <div key={x.name}>
+              <p className={cn(BODY, "font-medium")}>{x.name}</p>
+              <Bar notes={x.bar.notes} session={x.bar.session} className="mt-[1.6vh] h-[clamp(12px,2vh,22px)]" />
+              {answered ? <p className={cn(BODY, "mt-[1.6vh] text-ink/85")}>{x.answer}</p> : null}
+            </div>
+          ))}
+        </div>
+        {answered ? null : <p className={cn(META, "mt-[3vh]")}>{SESSIONS.hidden}</p>}
+      </div>
+    </div>
+  );
+}
 
-/** Two sessions, one prompt. Answers hidden on the opening screen; shown at the close. */
-function Sessions({ answered = false }: { answered?: boolean }) {
+/* diagram: what every message carries, at message 1, 10 and 40 */
+function Diagram({ s, id }: { s: IntroScreen; id: string }) {
   return (
     <div>
-      <p className={SMALL}>{SESSIONS.lead}</p>
-      <Bubble className="mt-2">{PROMPT}</Bubble>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        {([SESSIONS.known, SESSIONS.fresh] as const).map((s, i) => (
-          <div key={s.name} className={cn(CARD, "flex flex-col gap-3 !p-5")}>
-            <p className={cn(TEXT, "font-medium", i === 0 && "text-accent")}>{s.name}</p>
-            <div className={cn("rounded-control px-4 py-3", answered ? "bg-sunken" : "border border-dashed border-line-strong")}>
-              <p className={cn(TEXT, answered ? "" : "font-display text-[2rem] leading-none text-mute")}>{answered ? s.answer : "?"}</p>
-            </div>
-          </div>
-        ))}
+      <div className="grid gap-[3vh] lg:grid-cols-12 lg:items-end lg:gap-x-[4vw]">
+        <h2 id={id} className={cn(HEAD, "lg:col-span-7")}>
+          {s.title}
+        </h2>
+        <p className={cn(BODY, "text-ink/85 lg:col-span-5")}>{s.body}</p>
       </div>
-      {answered ? null : <p className={cn(SMALL, "mt-4")}>{SESSIONS.hidden}</p>}
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ reads */
-
-function Reads() {
-  const reduce = useReducedMotion();
-  return (
-    <div className="h-[clamp(320px,68svh,760px)] w-full">
-      {reduce ? (
-        <Flat />
-      ) : (
-        <Suspense fallback={null}>
-          <World />
-        </Suspense>
-      )}
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ ask */
-
-/** A question screen: options said aloud, hands counted. Nothing to click, so a clicker can run the talk. */
-function Ask({ id }: { id: keyof typeof ASK }) {
-  return (
-    <div className={CARD}>
-      {id === "yes-ask" ? (
-        <div className="mb-6 border-b border-line pb-6">
-          <blockquote className="font-display text-[clamp(1.3rem,1.7vw,1.8rem)] leading-snug tracking-tight">“{YESMAN.rationale}”</blockquote>
-          <p className={cn(SMALL, "mt-4")}>{YESMAN.promptLead}</p>
-          <Bubble className="mt-2">{PROMPT}</Bubble>
-        </div>
-      ) : null}
-      <p className={cn(SMALL, "font-medium")}>{HANDS}</p>
-      <ol className="mt-3 flex flex-wrap gap-3">
-        {ASK[id].map((o) => (
-          <li key={o} className={cn("rounded-full border border-line-strong px-5 py-2.5 font-medium", TEXT)}>
-            {o}
+      {/* one grid for all rows, so every bar starts at the same x */}
+      <ul className="mt-[6vh] grid grid-cols-[auto_1fr] items-center gap-x-[2vw] gap-y-[2.2vh]">
+        {CARRY.rows.map((r) => (
+          <li key={r.label} className="contents">
+            <span className={cn(BODY, "whitespace-nowrap text-mute")}>{r.label}</span>
+            <Bar notes={0.06} session={r.session} className="h-[clamp(32px,6.5vh,72px)]" />
           </li>
         ))}
-      </ol>
+      </ul>
+      <ul className="mt-[5vh] grid grid-cols-2 gap-x-[3vw] gap-y-[2vh] lg:grid-cols-5">
+        {PARTS.map((p) => (
+          <li key={p.key} className="flex items-start gap-[0.8vw]">
+            <span className={cn("mt-[0.5em] size-[clamp(12px,1.6vh,18px)] shrink-0 rounded-[3px]", FILL[p.key])} />
+            <span>
+              <span className={cn(BODY, "block font-medium", p.key === "session" && "text-accent")}>{p.name}</span>
+              <span className={cn(META, "block")}>{p.loads}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className={cn(BODY, "mt-[5vh]")}>
+        <span className="font-medium">{CARRY.see}</span> <span className="text-mute">{CARRY.note}</span>
+      </p>
     </div>
   );
 }
 
-/* ------------------------------------------------------------------ reveal */
+/* list: the six tools as a ruled table across the full width */
+function Toolkit({ s, id }: { s: IntroScreen; id: string }) {
+  const cell = "text-[clamp(1.05rem,min(1.45vw,2.6vh),1.7rem)] leading-[1.3]";
+  return (
+    <div>
+      <div className="grid gap-[3vh] lg:grid-cols-12 lg:items-end lg:gap-x-[4vw]">
+        <h2 id={id} className={cn(HEAD, "lg:col-span-6")}>
+          {s.title}
+        </h2>
+        <p className={cn(BODY, "text-ink/85 lg:col-span-6")}>{s.body}</p>
+      </div>
+      <table className={cn("mt-[5vh] w-full text-left", cell)}>
+        <thead className={META}>
+          <tr className="border-b border-line-strong">
+            <th className="w-[20%] pb-[1.2vh] pr-[2vw] font-normal">{TOOLS_HEAD.name}</th>
+            <th className="w-[30%] pb-[1.2vh] pr-[2vw] font-normal">{TOOLS_HEAD.is}</th>
+            <th className="pb-[1.2vh] pr-[2vw] font-normal">{TOOLS_HEAD.when}</th>
+            <th className="w-[9%] pb-[1.2vh] font-normal">{TOOLS_HEAD.web}</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line">
+          {TOOLS.map((t) => (
+            <tr key={t.name} className="align-baseline">
+              <th scope="row" className="py-[1.5vh] pr-[2vw] text-left font-semibold">
+                {t.name}
+              </th>
+              <td className="py-[1.5vh] pr-[2vw] text-ink/80">{t.is}</td>
+              <td className="py-[1.5vh] pr-[2vw]">{t.when}</td>
+              <td className={cn("py-[1.5vh] font-medium", t.web ? "text-ink/80" : "text-warn")}>{t.web ? WEB.yes : WEB.no}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
-/** The one earned word: the plain description has been shown; now it gets its name, decoded into place. */
-function Reveal({ word }: { word: (typeof WORDS)[number]["word"] }) {
+/* ask: the question, poster size; the options as bare numerals, so nobody mistakes them for buttons */
+function Ask({ s, id }: { s: IntroScreen; id: string }) {
+  const options = ASK[s.id as keyof typeof ASK];
+  return (
+    <div>
+      <h2 id={id} className={cn(STATEMENT, "max-w-[16ch]")}>
+        {s.title}
+      </h2>
+      <p className={cn(BODY, "mt-[3vh] max-w-[48ch] text-ink/85")}>{s.body}</p>
+      <div className="mt-[7vh] flex flex-wrap items-baseline gap-x-[6vw] gap-y-[2vh]">
+        <ol className="contents">
+          {options.map((o) => (
+            <li key={o} className={cn(HEAD, "tabular-nums")}>
+              {o}
+            </li>
+          ))}
+        </ol>
+        <p className={cn(BODY, "text-mute")}>{HANDS}</p>
+      </div>
+    </div>
+  );
+}
+
+/** The answer's number (or "None") set in warn; the rest of the line in ink. */
+function emphasise(title: string): ReactNode {
+  const m = title.match(/\d+%|None/);
+  if (!m || m.index === undefined) return title;
+  return (
+    <>
+      {title.slice(0, m.index)}
+      <span className="text-warn">{m[0]}</span>
+      {title.slice(m.index + m[0].length)}
+    </>
+  );
+}
+
+/* answer: the finding as a sentence, poster size; one supporting element at most */
+function Answer({ s, id }: { s: IntroScreen; id: string }) {
+  return (
+    <div>
+      <h2 id={id} className={cn(STATEMENT, "max-w-[18ch]")}>
+        {emphasise(s.title)}
+      </h2>
+      <p className={cn(BODY, "mt-[3vh] max-w-[46ch] text-ink/85")}>{s.body}</p>
+      {s.id === "rot" ? <Named word="context rot" /> : null}
+      {s.id === "review" ? (
+        <div className="mt-[4vh] grid gap-[4vh] lg:grid-cols-12 lg:items-end lg:gap-x-[4vw]">
+          <Rows className="lg:col-span-7" />
+          <Reveal word="sycophancy" className="lg:col-span-5" />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function Named({ word }: { word: (typeof WORDS)[number]["word"] }) {
+  const w = WORDS.find((x) => x.word === word)!;
+  return (
+    <p className={cn(BODY, "mt-[4vh]")}>
+      <span className="text-mute">{NAMED} </span>
+      <span className="font-display text-[1.35em] font-semibold text-accent">{w.word}</span>
+    </p>
+  );
+}
+
+/** The CHI 2026 result per model; bars grow once when the list comes into view. */
+function Rows({ className }: { className?: string }) {
+  return (
+    <div className={className}>
+      <p className={META}>{REVIEW.rowsLead}</p>
+      <motion.ul
+        className={cn(BODY, "mt-[1.6vh] grid grid-cols-[auto_1fr_auto] items-center gap-x-[1.6vw] gap-y-[1.2vh] whitespace-nowrap")}
+        initial="off"
+        whileInView="on"
+        viewport={{ once: true }}
+      >
+        {REVIEW.rows.map((r, k) => (
+          <li key={r.model} className="contents">
+            <span>{r.model}</span>
+            <span className="h-[clamp(10px,1.6vh,16px)] overflow-hidden rounded-[3px] bg-ink/[0.1]">
+              <motion.span
+                className="block h-full bg-accent"
+                style={{ originX: 0 }}
+                variants={{ off: { scaleX: 0 }, on: { scaleX: r.more / 50 } }}
+                transition={{ duration: 0.7, delay: k * 0.06, ease: EASE }}
+              />
+            </span>
+            <span className="text-right tabular-nums text-ink/80">{r.more ? `+${r.more}%` : REVIEW.zero}</span>
+          </li>
+        ))}
+      </motion.ul>
+    </div>
+  );
+}
+
+/** The one earned word: shown as a description first, then named, decoded into place. */
+function Reveal({ word, className }: { word: (typeof WORDS)[number]["word"]; className?: string }) {
   const w = WORDS.find((x) => x.word === word)!;
   const reduce = useReducedMotion();
   const [shown, setShown] = useState(reduce ? w.word : scrambled(w.word, 0));
@@ -147,14 +392,13 @@ function Reveal({ word }: { word: (typeof WORDS)[number]["word"] }) {
     requestAnimationFrame(step);
   };
   return (
-    <motion.div className="mt-5" onViewportEnter={begin} viewport={{ once: true, amount: 0.8 }}>
-      <p className={SMALL}>{NAMED}</p>
-      <p className="mt-1 flex flex-wrap items-baseline gap-x-4">
-        <span aria-label={w.word} className={cn(BIG, "text-[clamp(2.6rem,4.4vw,4rem)] text-accent")}>
-          <span aria-hidden>{shown}</span>
-        </span>
-        <span className={TEXT}>{w.means}</span>
+    <motion.div className={className} onViewportEnter={begin} viewport={{ once: true, amount: 0.8 }}>
+      <p className={META}>{NAMED}</p>
+      <p className={cn(HEAD, "mt-[0.6vh] text-accent")}>
+        <span className="sr-only">{w.word}</span>
+        <span aria-hidden>{shown}</span>
       </p>
+      <p className={cn(BODY, "mt-[1vh]")}>{w.means}</p>
     </motion.div>
   );
 }
@@ -169,117 +413,52 @@ function scrambled(word: string, t: number) {
     .join("");
 }
 
-/* ------------------------------------------------------------------ test 1 */
-
-function Rot() {
-  const [rot] = WORDS;
+/* do: the habit on the left, the exact thing you type on the right, large enough to photograph */
+function Do({ s, id }: { s: IntroScreen; id: string }) {
   return (
-    <div className={CARD}>
-      <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
-        <span className={cn(BIG, "text-[clamp(4rem,7vw,6.5rem)]")}>{ROT.big}</span>
-        <span className={TEXT}>{ROT.bigLabel}</span>
+    <div className="grid items-center gap-[5vh] lg:grid-cols-12 lg:gap-x-[4vw]">
+      <Copy s={s} id={id} className="lg:col-span-5" />
+      <div className="space-y-[3vh] lg:col-span-7">
+        {s.id === "rot-do" ? (
+          <>
+            <Sheet title={ROT.noteTitle} lines={ROT.note} />
+            <Sheet title={ROT.compactTitle} lines={[ROT.compact]} />
+          </>
+        ) : null}
+        {s.id === "rules-do" ? <Sheet title={RULES.fileTitle} lines={RULES.file} /> : null}
+        {s.id === "review-do" ? <Sheet title={REVIEW.criteriaTitle} lines={[REVIEW.criteria]} /> : null}
       </div>
-      <p className={cn(TEXT, "mt-5")}>
-        <span className="text-mute">{NAMED} </span>
-        <span className="font-display text-[1.4em] font-semibold text-accent">{rot.word}</span>
-      </p>
-      <Practice lead={ROT.practice} />
-      <div className="mt-3 rounded-control bg-sunken p-4 font-mono text-[clamp(0.9rem,1vw,1.05rem)] leading-relaxed">
-        <p className="text-mute">{ROT.noteTitle}</p>
-        {ROT.note.map((l) => (
+    </div>
+  );
+}
+
+function Sheet({ title, lines }: { title: string; lines: readonly string[] }) {
+  return (
+    <figure>
+      <figcaption className={META}>{title}</figcaption>
+      <div className={cn(SHEET, MONO, "mt-[1vh]")}>
+        {lines.map((l) => (
           <p key={l}>{l}</p>
         ))}
       </div>
-      <p className={cn(SMALL, "mt-4")}>{ROT.caveat}</p>
-      <Source text={ROT.source} href={ROT.href} />
-    </div>
+    </figure>
   );
 }
 
-/* ------------------------------------------------------------------ test 2 */
-
-function YesMan() {
-  return (
-    <div className={CARD}>
-      <p className={SMALL}>{YESMAN.rowsLead}</p>
-      {/* one grid for all rows, so the bars line up whatever the name lengths */}
-      <ul className={cn("mt-3 grid grid-cols-[auto_1fr_4.5rem] items-center gap-x-4 gap-y-2 whitespace-nowrap", TEXT)}>
-        {YESMAN.rows.map((r, i) => (
-          <li key={r.model} className="contents">
-            <span>{r.model}</span>
-            {/* the track watches the viewport: a bar at scaleX(0) has no area for the observer to see */}
-            <motion.span className="h-3 overflow-hidden rounded-full bg-ink/[0.06]" initial="off" whileInView="on" viewport={{ once: true }}>
-              <motion.span
-                className="block h-full rounded-full bg-accent"
-                style={{ originX: 0 }}
-                variants={{ off: { scaleX: 0 }, on: { scaleX: r.more / 50 } }}
-                transition={{ duration: 0.7, delay: i * 0.06, ease: EASE }}
-              />
-            </motion.span>
-            <span className="text-right tabular-nums text-mute">{r.more ? `+${r.more}%` : "none"}</span>
-          </li>
-        ))}
-      </ul>
-      <p className={cn(TEXT, "mt-4")}>{YESMAN.bridge}</p>
-      <Reveal word="sycophancy" />
-      <Practice lead={`${YESMAN.practice} “${YESMAN.criteria}”`} />
-      <Source text={YESMAN.source} href={YESMAN.href} />
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ test 3 */
-
-function Learn() {
-  return (
-    <div className={CARD}>
-      <div className="grid grid-cols-2 gap-6">
-        <Score value={LEARNING.withAi} label={LEARNING.withAiLabel} />
-        <Score value={LEARNING.byHand} label={LEARNING.byHandLabel} />
-      </div>
-      <div className="mt-6 grid grid-cols-2 gap-6 border-t border-line pt-5">
-        <div>
-          <p className={cn(BIG, "text-[clamp(2rem,3vw,2.8rem)]")}>{LEARNING.explain}</p>
-          <p className={cn(SMALL, "mt-1")}>{LEARNING.explainLabel}</p>
-        </div>
-        <div>
-          <p className={cn(BIG, "text-[clamp(2rem,3vw,2.8rem)]")}>{LEARNING.delegate}</p>
-          <p className={cn(SMALL, "mt-1")}>{LEARNING.delegateLabel}</p>
-        </div>
-      </div>
-      <p className={cn(SMALL, "mt-4")}>{LEARNING.caveat}</p>
-      <Practice lead={LEARNING.practice} typed={LEARNING.ask} />
-      <Source text={LEARNING.source} href={LEARNING.href} />
-    </div>
-  );
-}
-
-function Score({ value, label }: { value: number; label: string }) {
+/* steps: tonight's three moves, a sequence, so numbered */
+function Steps({ s, id }: { s: IntroScreen; id: string }) {
   return (
     <div>
-      <div className={cn(BIG, "text-[clamp(4rem,7vw,6.5rem)]")}>{value}%</div>
-      <div className={cn(SMALL, "mt-1.5")}>
-        {LEARNING.scoreLabel}, {label}
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ close */
-
-function Close() {
-  return (
-    <div className="space-y-5">
-      <Sessions answered />
-      <ol className={cn(CARD, "!py-4 divide-y divide-line")}>
-        {HABITS.map((h) => (
-          <li key={h.test} className="flex items-baseline gap-4 py-2.5">
-            <span className={cn(SMALL, "w-16 shrink-0")}>{h.test}</span>
-            <span className={cn(TEXT, "font-medium")}>{h.habit}</span>
+      <Copy s={s} id={id} />
+      <ol className="mt-[7vh] grid gap-[5vh] lg:grid-cols-3 lg:gap-x-[4vw]">
+        {STEPS.map((x, k) => (
+          <li key={x.step} className="border-t border-line-strong pt-[2.4vh]">
+            <span className={cn(HEAD, "tabular-nums")}>{k + 1}</span>
+            <p className={cn(BODY, "mt-[1.6vh] font-semibold")}>{x.step}</p>
+            <p className={cn(BODY, "mt-[0.6vh] text-ink/85")}>{x.text}</p>
           </li>
         ))}
       </ol>
-      <p className="font-display text-[clamp(1.6rem,2.4vw,2.4rem)] text-accent">{TAGLINE}</p>
     </div>
   );
 }
