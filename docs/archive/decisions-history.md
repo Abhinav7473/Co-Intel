@@ -303,3 +303,19 @@ script (thanks to Prof. Ramtin, two hands-up questions, token anxiety and jargon
 premise (LLM and token defined) and recap screens, thanks on the close; the three tests regrouped as two failure modes
 (test 2 joins context rot); the two words now shuffle until clicked (was: decode once on view / static). "No clicks in
 the talk" relaxed for those two. Jargon check now lets LLM/token through after the premise. Skill: made-to-stick.
+
+## 2026-10-15: /intro screens stop explaining
+Owner: slides back a speaker with a script; don't type "hands up" on every screen or overexplain. Removed every
+screen body, "Hands up.", "Click to reveal", the hook's teaser line and the words' meanings; shortened term glosses,
+recap lines and the diagram note. All cut lines moved to the run sheet as "What to say per screen".
+
+## 2026-10-15: /intro v8, title and tokens; studies stand alone
+Owner: no hands-up screen; no "demystifying" or word definitions of LLM/token on screen; show a sentence and a long
+word tokenized instead; study screens leaned on the speaker too much; write a proper script. Added a title screen
+(owner's title "AI Workflow Habits", class line only) and a tokens screen (real o200k_base splits); each ask screen
+gets a one-line setup, each answer/do screen a one-line finding. Test 1 reworded: Chroma doesn't say how many of its
+18 models were in the LongMemEval run, so "None of them / all 18" became "The short part. Every model tested."
+Full script (~1,350 words) in talk-notes.
+IFScale reworded the same day: its "instructions" are keyword rules ("include the word X" in a business report), not
+files. Screen 9 now says rules/words; the script marks the CLAUDE.md link as an inference and names ETH as the study
+that tested instruction files.

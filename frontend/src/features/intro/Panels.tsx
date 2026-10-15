@@ -3,10 +3,8 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   AGENDA,
   ASK,
+  BYLINE,
   CARRY,
-  CLICK,
-  HANDS,
-  HANDS_UP,
   NAMED,
   PARTS,
   PROMPT,
@@ -20,7 +18,7 @@ import {
   STEPS,
   STRIP,
   STRIP_LABEL,
-  TERMS,
+  TOKENS,
   THANKS,
   TOOLS,
   TOOLS_HEAD,
@@ -119,10 +117,10 @@ export function Screen({ s, i }: { s: IntroScreen; i: number }) {
   const Title = i === 0 ? "h1" : "h2";
   const id = `${s.id}-title`;
   switch (s.kind) {
-    case "hands":
-      return <Hands s={s} Title={Title} id={id} />;
-    case "premise":
-      return <Premise s={s} id={id} />;
+    case "title":
+      return <TitleScreen s={s} Title={Title} id={id} />;
+    case "tokens":
+      return <Tokens s={s} id={id} />;
     case "recap":
       return <Recap s={s} id={id} />;
     case "split":
@@ -148,7 +146,7 @@ function Copy({ s, id, className }: { s: IntroScreen; id: string; className?: st
       <h2 id={id} className={HEAD}>
         {s.title}
       </h2>
-      <p className={cn(BODY, "mt-[3vh] max-w-[38ch] text-ink/85")}>{s.body}</p>
+      {s.finding ? <p className={cn(BODY, "mt-[3vh] max-w-[38ch] text-ink/85")}>{s.finding}</p> : null}
     </div>
   );
 }
@@ -195,7 +193,6 @@ function Split({ s, Title, id }: { s: IntroScreen; Title: "h1" | "h2"; id: strin
             </motion.span>
           ))}
         </Title>
-        <p className={cn(BODY, "mt-[3vh] max-w-[30ch] text-ink/85")}>{s.body}</p>
       </div>
       <div className="lg:col-span-6">
         <p className={META}>{SESSIONS.lead}</p>
@@ -212,7 +209,7 @@ function Split({ s, Title, id }: { s: IntroScreen; Title: "h1" | "h2"; id: strin
             </div>
           ))}
         </div>
-        {answered ? <p className={cn(HEAD, "mt-[6vh]")}>{THANKS}</p> : <p className={cn(META, "mt-[3vh]")}>{SESSIONS.hidden}</p>}
+        {answered ? <p className={cn(HEAD, "mt-[6vh]")}>{THANKS}</p> : null}
       </div>
     </div>
   );
@@ -222,12 +219,9 @@ function Split({ s, Title, id }: { s: IntroScreen; Title: "h1" | "h2"; id: strin
 function Diagram({ s, id }: { s: IntroScreen; id: string }) {
   return (
     <div>
-      <div className="grid gap-[3vh] lg:grid-cols-12 lg:items-end lg:gap-x-[4vw]">
-        <h2 id={id} className={cn(HEAD, "lg:col-span-7")}>
-          {s.title}
-        </h2>
-        <p className={cn(BODY, "text-ink/85 lg:col-span-5")}>{s.body}</p>
-      </div>
+      <h2 id={id} className={HEAD}>
+        {s.title}
+      </h2>
       {/* one grid for all rows, so every bar starts at the same x */}
       <ul className="mt-[6vh] grid grid-cols-[auto_1fr] items-center gap-x-[2vw] gap-y-[2.2vh]">
         {CARRY.rows.map((r) => (
@@ -249,7 +243,7 @@ function Diagram({ s, id }: { s: IntroScreen; id: string }) {
         ))}
       </ul>
       <p className={cn(BODY, "mt-[5vh]")}>
-        <span className="font-medium">{CARRY.see}</span> <span className="text-mute">{CARRY.note}</span>
+        <span className="font-mono font-medium">{CARRY.see}</span> <span className="text-mute">· {CARRY.note}</span>
       </p>
     </div>
   );
@@ -260,12 +254,9 @@ function Toolkit({ s, id }: { s: IntroScreen; id: string }) {
   const cell = "text-[clamp(1.05rem,min(1.45vw,2.6vh),1.7rem)] leading-[1.3]";
   return (
     <div>
-      <div className="grid gap-[3vh] lg:grid-cols-12 lg:items-end lg:gap-x-[4vw]">
-        <h2 id={id} className={cn(HEAD, "lg:col-span-6")}>
-          {s.title}
-        </h2>
-        <p className={cn(BODY, "text-ink/85 lg:col-span-6")}>{s.body}</p>
-      </div>
+      <h2 id={id} className={HEAD}>
+        {s.title}
+      </h2>
       <table className={cn("mt-[5vh] w-full text-left", cell)}>
         <thead className={META}>
           <tr className="border-b border-line-strong">
@@ -300,7 +291,7 @@ function Ask({ s, id }: { s: IntroScreen; id: string }) {
       <h2 id={id} className={cn(STATEMENT, "max-w-[16ch]")}>
         {s.title}
       </h2>
-      <p className={cn(BODY, "mt-[3vh] max-w-[48ch] text-ink/85")}>{s.body}</p>
+      {s.setup ? <p className={cn(BODY, "mt-[3vh] max-w-[60ch] text-mute")}>{s.setup}</p> : null}
       <div className="mt-[7vh] flex flex-wrap items-baseline gap-x-[6vw] gap-y-[2vh]">
         <ol className="contents">
           {options.map((o) => (
@@ -309,15 +300,14 @@ function Ask({ s, id }: { s: IntroScreen; id: string }) {
             </li>
           ))}
         </ol>
-        <p className={cn(BODY, "text-mute")}>{HANDS}</p>
       </div>
     </div>
   );
 }
 
-/** The answer's number (or "None") set in warn; the rest of the line in ink. */
+/** The answer (a number, or "The short part") set in warn; the rest of the line in ink. */
 function emphasise(title: string): ReactNode {
-  const m = title.match(/\d+%|None/);
+  const m = title.match(/\d+%|The short part/);
   if (!m || m.index === undefined) return title;
   return (
     <>
@@ -335,7 +325,7 @@ function Answer({ s, id }: { s: IntroScreen; id: string }) {
       <h2 id={id} className={cn(STATEMENT, "max-w-[18ch]")}>
         {emphasise(s.title)}
       </h2>
-      <p className={cn(BODY, "mt-[3vh] max-w-[46ch] text-ink/85")}>{s.body}</p>
+      {s.finding ? <p className={cn(BODY, "mt-[3vh] max-w-[46ch] text-ink/85")}>{s.finding}</p> : null}
       {s.id === "rot" ? <Reveal word="context rot" className="mt-[4vh]" /> : null}
       {s.id === "review" ? (
         <div className="mt-[4vh] grid gap-[4vh] lg:grid-cols-12 lg:items-end lg:gap-x-[4vw]">
@@ -385,7 +375,6 @@ function Reveal({ word, className }: { word: (typeof WORDS)[number]["word"]; cla
   const w = WORDS.find((x) => x.word === word)!;
   const reduce = useReducedMotion();
   const [shown, setShown] = useState(reduce ? w.word : scrambled(w.word, 0));
-  const [done, setDone] = useState(Boolean(reduce));
   const revealed = useRef(Boolean(reduce));
   // shuffle on a timer while mounted and not yet revealed; React 19 runs the returned cleanup on unmount
   const shuffle = (el: HTMLButtonElement | null) => {
@@ -402,7 +391,6 @@ function Reveal({ word, className }: { word: (typeof WORDS)[number]["word"]; cla
       const t = Math.min(1, (now - start) / 900);
       setShown(scrambled(w.word, t));
       if (t < 1) requestAnimationFrame(step);
-      else setDone(true);
     };
     requestAnimationFrame(step);
   };
@@ -413,7 +401,6 @@ function Reveal({ word, className }: { word: (typeof WORDS)[number]["word"]; cla
         <span className="sr-only">{w.word}</span>
         <span aria-hidden>{shown}</span>
       </button>
-      <p className={cn(BODY, "mt-[1vh]", !done && "text-mute")}>{done ? w.means : CLICK}</p>
     </div>
   );
 }
@@ -428,52 +415,60 @@ function scrambled(word: string, t: number) {
     .join("");
 }
 
-/* hands: the opening hands up, two questions at poster size */
-function Hands({ s, Title, id }: { s: IntroScreen; Title: "h1" | "h2"; id: string }) {
+/* title: the talk's name, the class, and the five parts */
+function TitleScreen({ s, Title, id }: { s: IntroScreen; Title: "h1" | "h2"; id: string }) {
   return (
     <div>
-      <Title id={id} className={cn(META, "uppercase tracking-[0.12em]")}>
+      <p className={META}>{BYLINE}</p>
+      <Title id={id} className={cn(STATEMENT, "mt-[2vh] max-w-[12ch]")}>
         {s.title}
       </Title>
-      <ol className="mt-[4vh] space-y-[5vh]">
-        {HANDS_UP.map((q, k) => (
-          <li key={q} className="grid grid-cols-[auto_1fr] items-baseline gap-x-[3vw]">
-            <span className={cn(HEAD, "tabular-nums text-mute")}>{k + 1}</span>
-            <span className={cn(STATEMENT, "max-w-[20ch]")}>{q}</span>
+      <ol className={cn(BODY, "mt-[6vh] flex flex-wrap gap-x-[3vw] gap-y-[1.2vh] text-ink/85")}>
+        {AGENDA.map((a, k) => (
+          <li key={a} className="flex gap-[0.6vw]">
+            <span className="tabular-nums text-mute">{k + 1}</span>
+            <span>{a}</span>
           </li>
         ))}
       </ol>
-      <p className={cn(BODY, "mt-[5vh] text-mute")}>{s.body}</p>
     </div>
   );
 }
 
-/* premise: what today demystifies, and the two words everything leans on */
-function Premise({ s, id }: { s: IntroScreen; id: string }) {
+/** One run of text as its tokens: each a tinted chip, alternating, so the boundaries show. */
+function Chips({ parts, size }: { parts: readonly string[]; size: string }) {
   return (
-    <div className="grid gap-[5vh] lg:grid-cols-12 lg:gap-x-[4vw]">
-      <div className="lg:col-span-6">
-        <h2 id={id} className={cn(STATEMENT, "max-w-[12ch]")}>
-          {s.title}
-        </h2>
-        <p className={cn(BODY, "mt-[3vh] max-w-[34ch] text-ink/85")}>{s.body}</p>
-        <ol className={cn(BODY, "mt-[4vh] space-y-[1vh]")}>
-          {AGENDA.map((a, k) => (
-            <li key={a} className="flex gap-[1vw]">
-              <span className="tabular-nums text-mute">{k + 1}</span>
-              <span>{a}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-      <dl className="space-y-[4vh] lg:col-span-6 lg:self-center">
-        {TERMS.map((t) => (
-          <div key={t.word} className="border-t border-line-strong pt-[2vh]">
-            <dt className={cn(HEAD, "text-accent")}>{t.word}</dt>
-            <dd className={cn(BODY, "mt-[1vh] text-ink/85")}>{t.means}</dd>
-          </div>
+    <div>
+      <p className={cn(size, "flex flex-wrap gap-y-[1vh]")}>
+        {parts.map((x, k) => (
+          <span key={k} className={cn("whitespace-pre rounded-[6px] px-[0.08em]", k % 2 ? "bg-series-b/25" : "bg-accent/15")}>
+            {x}
+          </span>
         ))}
-      </dl>
+      </p>
+      <p className={cn(META, "mt-[1vh] tabular-nums")}>
+        {parts.length} {TOKENS.unit}
+      </p>
+    </div>
+  );
+}
+
+/* tokens: a sentence and two long words, split the way a model reads them */
+function Tokens({ s, id }: { s: IntroScreen; id: string }) {
+  return (
+    <div>
+      <h2 id={id} className={HEAD}>
+        {s.title}
+      </h2>
+      <div className="mt-[6vh] space-y-[5vh]">
+        <Chips parts={TOKENS.sentence} size={cn(HEAD, "font-sans font-medium tracking-normal")} />
+        <div className="grid gap-[3vh] lg:grid-cols-2 lg:gap-x-[4vw]">
+          {TOKENS.words.map((w) => (
+            <Chips key={w.join("")} parts={w} size={cn(HEAD, "font-sans font-medium tracking-normal")} />
+          ))}
+        </div>
+      </div>
+      <p className={cn(META, "mt-[5vh]")}>{TOKENS.note}</p>
     </div>
   );
 }

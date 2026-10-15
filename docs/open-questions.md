@@ -4,8 +4,8 @@ Questions for Abhinav and known gaps. **Not** for the website: the site is audie
 Answer inline; answered items move to `docs/decisions.md` (standing) and the history, and are deleted here.
 
 ## Next session: start here (handoff 2026-10-15)
-1. **/intro is v7**: preface (hands up, premise "Demystifying the LLM space"), two failure modes, recap, thanks
-   (17 screens). Brief: `docs/seminar/brief.md`. Run sheet with your opening script: `docs/talk-notes.md`. Ground
+1. **/intro is v8**: title, tokens (real splits), two failure modes with one-line study setups, recap, thanks
+   (17 screens). Brief: `docs/seminar/brief.md`. Full script: `docs/talk-notes.md`. Ground
    truth: `make check-intro` (17 screens fit at 1080p, 720p and phone, PageDown lands on each, no console errors).
    Vercel deploy steps: `docs/dev-env.md`, "Deploy".
 2. **Docs restructured:** `docs/decisions.md` is standing decisions only (relevance + durability); history, old talk
@@ -16,8 +16,8 @@ Answer inline; answered items move to `docs/decisions.md` (standing) and the his
 ## Questions: junior seminar
 - **`STAGE` vs `CONTAINER`:** /intro uses a full-width frame, which bends CLAUDE.md's "every page uses CONTAINER". Keep
   the exception for the projected talk, or go back to the 1240px container?
-- **Length:** v7 runs about 16 minutes before questions (preface + recap add ~2). Is 15 a hard limit? If so, the
-  toolkit or the second context-rot test (screens 9–11) is the place to cut.
+- **Length:** v8's script is ~1,350 words, about 15 minutes with hands and the `/context` demo. Time a dry run;
+  if it runs over, the toolkit or the second context-rot test (screens 9–11) is the place to cut.
 - **Approve the brief?** `docs/seminar/brief.md` was drafted from chat, not written by you. Edit or approve.
 - **The 5×5 yes-man runs** (protocol in `docs/archive/talk-notes-junior-v1-v5.md`, "Before class"): run in Claude Code
   on the on-screen rationale? Then the opening screen's "?" can become real answers.

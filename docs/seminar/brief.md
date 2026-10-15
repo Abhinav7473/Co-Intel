@@ -2,13 +2,13 @@
 
 Draft 2026-10-10, written from the owner's words in chat; premise, preface and close updated 2026-10-15. Edit this file to change the talk; the page follows it.
 
-**Premise.** Demystifying the LLM space: a warm-up before they code again, easing token anxiety and the jargon.
+**Premise.** Demystifying the LLM space (said, not shown): a warm-up before they code again, easing token anxiety and the jargon.
 **Goal.** Get UX juniors working with Claude Code (on the web) on their own projects, and getting real insight from it.
 **Success test.** Within a week, each student has run one session on their own project with a CLAUDE.md they wrote.
 **Audience.** UX juniors in Prof. Ramtin's class. 15 minutes, presenter-paced on a projector, questions at the end.
 
-**Shape.** Preface (thanks, two hands-up questions, the premise with LLM and token defined), the mechanism, the
-toolkit, two failure modes, a recap, tonight's steps, the close with thanks and questions.
+**Shape.** Title (AI Workflow Habits; thanks and two hands-up questions are spoken), tokens shown on a real split, the
+mechanism, the toolkit, two failure modes, a recap, tonight's steps, the close with thanks and questions.
 **What they leave with.**
 1. The mechanism: every message, Claude Code rereads everything around your prompt. That, not wording, changes the answer.
 2. The toolkit, demystified: CLAUDE.md, skills, connectors (MCP), subagents, hooks, plugins. What each is, the trigger
@@ -19,5 +19,5 @@ toolkit, two failure modes, a recap, tonight's steps, the close with thanks and 
 4. Tonight's three steps on their own project.
 
 **Evidence rules.** Primary sources only; each number names its study; caveats on screen; no invented results.
-**Format.** One idea per screen; a test is a question screen then an answer screen; hands up; the only clicks are the presenter revealing the two named words.
+**Format.** One idea per screen; slides back the speaker's script, so no explanations or instructions on screen; a test is a question screen then an answer screen; hands up; the only clicks are the presenter revealing the two named words.
 **Not in scope.** API pricing, local models, writing plugins, agent frameworks.

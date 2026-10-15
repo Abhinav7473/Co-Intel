@@ -5,7 +5,7 @@
 import { SECTIONS } from "../src/content/brief.ts";
 import { SLIDES } from "../src/content/deck.ts";
 import * as INTRO from "../src/content/intro.ts";
-const { SCREENS, WORDS, TERMS } = INTRO;
+const { SCREENS, WORDS } = INTRO;
 import { TAKEAWAYS } from "../src/content/takeaways.ts";
 
 const LIMITS = { lines: 4, columns: 3, line: 90, heading: 60, more: 220, details: 320 };
@@ -70,9 +70,9 @@ for (const sec of SECTIONS) {
 
 // the junior seminar: short beats, no preaching, no jargon, words earned before they're used
 const PREACH = /\b(should|always|never|must|don['’]t)\b/i;
-// "LLM" and "token" are the premise: defined on that screen (TERMS), then earned like WORDS below
-const JARGON = /\b(context window|prompt engineering|agents?|model weights)\b/i;
-const EARNED = [...WORDS, ...TERMS.map((t) => ({ word: t.word.toLowerCase(), revealIn: "premise" }))];
+// "token" is shown (not defined) on the tokens screen, then earned like WORDS below
+const JARGON = /\b(context window|LLMs?|prompt engineering|agents?|model weights)\b/i;
+const EARNED = [...WORDS, { word: "token", revealIn: "tokens" }];
 // source titles and links are proper names (e.g. "How Many Instructions Can LLMs Follow…"), so they're not checked
 const SKIP = new Set(["sources", "source", "href"]);
 const strings = (v: unknown): string[] =>
@@ -86,11 +86,11 @@ for (const [name, value] of Object.entries(INTRO)) {
 }
 for (const c of SCREENS) {
   if (len(c.title) > 60) fail(c.id, `intro title ${len(c.title)} > 60 chars`);
-  if (len(c.body) > 170) fail(c.id, `intro body ${len(c.body)} > 170 chars`);
+  for (const [k, v] of [["setup", c.setup], ["finding", c.finding]] as const) if (v && len(v) > 110) fail(c.id, `intro ${k} ${len(v)} > 110 chars`);
   if (len(c.beat) > 18) fail(c.id, `intro strip label ${len(c.beat)} > 18 chars`);
   // a word may appear only from the screen that reveals it onward
   const at = SCREENS.indexOf(c);
-  for (const w of EARNED) if (at < SCREENS.findIndex((x) => x.id === w.revealIn) && `${c.title} ${c.body}`.toLowerCase().includes(w.word)) fail(c.id, `"${w.word}" used before it is earned`);
+  for (const w of EARNED) if (at < SCREENS.findIndex((x) => x.id === w.revealIn) && `${c.title} ${c.setup ?? ""} ${c.finding ?? ""}`.toLowerCase().includes(w.word)) fail(c.id, `"${w.word}" used before it is earned`);
 }
 
 if (problems.length) {
