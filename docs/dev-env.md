@@ -8,6 +8,7 @@
 | Lint everything | `make lint` (ESLint, tsc, Ruff, content check) |
 | Check copy limits | `make check-content` |
 | Check /intro in a real browser | `make check-intro` (headless Chromium in Docker; screenshots in `.shots/`) |
+| Preview the Vercel build | `make static` (http://localhost:4173, no API, data in browser storage) |
 | Format backend | `make fmt` |
 | New migration | `make revision m="..."` |
 | Backup / restore | `make backup` · `make restore f=backups/<file>.sql` |
@@ -31,3 +32,9 @@ container: that checks the container's copy, which can be stale.
 
 ## No host installs
 Your editor shows unresolved imports (no `node_modules` locally). Types are checked by `make lint`.
+
+## Deploy (Vercel, frontend only)
+`vercel.json` at the root builds `frontend/` with `VITE_BACKEND=local` and serves `frontend/dist` with an SPA rewrite.
+Import the repo in Vercel and leave Root Directory as the repo root. Security headers are copied from
+`infra/nginx/prod.conf`: change both together. `content/build-facts.json` and `previews.json` are committed build
+inputs, so run `make facts` / `make previews` and commit before deploying.

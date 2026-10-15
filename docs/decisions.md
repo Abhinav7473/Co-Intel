@@ -26,6 +26,7 @@ Date = when last decided or confirmed.
 | Date | Decision | Durability |
 |---|---|---|
 | 2026-10-03 | React 19, TanStack Router/Query, Tailwind 4, Vite; FastAPI on Granian; Postgres 18; Alembic (`backend/migrations/`). | Durable |
+| 2026-10-15 | Public deploy is the static frontend on Vercel; saved data lives in each viewer's browser (`api/local.ts`). The API and database run locally only. | Volatile: until data must be shared between viewers |
 | 2026-10-03 | TypeScript pinned to 6.0.3. | Volatile: when typescript-eslint supports TS ≥ 6.1 |
 | 2026-10-03 | nginx is the edge on :8088 in dev and prod; rate limits and CSP live there. Vite never inlines assets (`assetsInlineLimit: 0`, CSP). | Durable |
 | 2026-10-03 | Dev images use `pull_policy: build`; `make lint` lints mounted source in throwaway containers. | Volatile: if Compose gains a working `initial_sync` |

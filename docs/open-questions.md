@@ -22,7 +22,8 @@ Answer inline; answered items move to `docs/decisions.md` (standing) and the his
 - **Live moment:** which sample project do you open for `/context` on screen 2? A small public repo works best.
 - **chrome-devtools-mcp:** it needs a project `.mcp.json` and runs through `npx` on the host, which the no-host-installs
   rule forbids. Run it in Docker instead, or keep `make check-intro` (Playwright) as the browser check?
-- **Take-home link:** a QR code needs a public URL. Will the site be deployed?
+- **Take-home link:** the site can now deploy to Vercel (frontend only, `docs/dev-env.md`). Which URL goes on the QR
+  code, and should the public site show the tool pages (audit, assess, experiments, knowledge) or only the talk?
 
 ## Questions: grad site (full text in `docs/archive/open-questions-grad-2026-10-05.md`)
 - 0. Reframe (2026-10-05): what does the lab actually take home?

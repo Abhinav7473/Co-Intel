@@ -6,7 +6,7 @@ PROD := $(COMPOSE) --profile prod
 STAMP := $(shell date +%Y%m%d-%H%M%S)
 
 .DEFAULT_GOAL := help
-.PHONY: help dev prod down logs ps psql migrate revision backup restore lint fmt check-content check-intro previews facts nuke
+.PHONY: help dev prod down logs ps psql migrate revision backup restore lint fmt check-content check-intro previews facts static nuke
 
 help: ## Show targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
@@ -22,6 +22,9 @@ down: ## Stop everything (keeps the database volume)
 
 logs: ## Tail logs of running services
 	$(COMPOSE) --profile prod logs -f --tail=100
+
+static: ## The Vercel build (no API, data in browser storage), previewed on http://localhost:4173 (Ctrl-C to stop)
+	$(DEV) run --rm --no-deps -p 4173:4173 -v ./frontend/src:/app/src web-dev sh -c "VITE_BACKEND=local npx vite build && npx vite preview --host 0.0.0.0 --port 4173 --strictPort"
 
 ps: ## List running services
 	$(COMPOSE) --profile prod ps

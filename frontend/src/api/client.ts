@@ -14,8 +14,15 @@ const MESSAGES: Record<number, string> = {
   429: "Slow down — you're being rate limited. Try again in a few seconds.",
 };
 
-/** Same-origin fetch wrapper: JSON in, JSON out, typed errors. */
+/**
+ * Same-origin fetch wrapper: JSON in, JSON out, typed errors.
+ * Built with VITE_BACKEND=local (the static deploy), it answers from browser storage instead (`local.ts`).
+ */
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  if (import.meta.env.VITE_BACKEND === "local") {
+    const { localApi } = await import("./local");
+    return localApi(path, init) as T;
+  }
   const res = await fetch(`/api${path}`, {
     ...init,
     headers: {

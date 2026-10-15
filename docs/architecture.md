@@ -3,6 +3,9 @@
 ## Request path
 Browser → nginx :8088 → `/api/*` → Granian (FastAPI) → Postgres 18.
 Dev: nginx proxies everything else to Vite (HMR). Prod: nginx serves the built SPA from its own image.
+Static deploy (Vercel, `vercel.json`): no nginx, API or database. Built with `VITE_BACKEND=local`, `api()` in
+`api/client.ts` hands every request to `api/local.ts`, which answers the same routes from localStorage (per viewer;
+the mistakes poll counts only that browser). Hooks and pages don't know which backend they're on.
 `/api/setup-audits` allows 512 KB bodies (pasted memory files); everything else 32 KB.
 
 ## Routes (`frontend/src/router.tsx`)
