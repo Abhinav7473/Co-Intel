@@ -64,18 +64,31 @@ The softest rewrite came from the chat with the most context, which points the w
 an anecdote. Talk line: *critique that would fit any sentence isn't evidence it read yours.* On the site: memory topic,
 scenes `memory-yesman-run` + `memory-yesman-lesson`. For the live demo, paste the full abstract and do 3 runs each.
 
-## Junior seminar (/intro): run sheet, v6.1 (2026-10-10)
+## Junior seminar (/intro): run sheet, v7 (2026-10-15)
 Brief: `docs/seminar/brief.md`. Laptop at 1920×1080 or 1280×720, browser full screen, clicker or PageDown/Space:
-one press = one screen (14). Before class: `make check-intro`, and open one real Claude Code session for `/context`.
+one press = one screen (17). Before class: `make check-intro`, and open one real Claude Code session for `/context`.
 The strip at the bottom is the talk's own session: point at it when it grows, dims, and resets.
+**The two words** (screens 7 and 13) shuffle until you click them with the mouse; the click locks the word in and
+shows its meaning. Ask the room to guess the name first, then click. PageDown still works after the click.
+
+**Opening (screens 1–2, your words):** "Thank you Prof. Ramtin for hosting me. Let's see if I can dish out some
+concepts I think would make your AI usage better. I have a question: how many of you use Claude, Gemini or GPT for
+projects? Yeah, pretty much everyone. How many of you use Claude Code or Codex? I see it's split. No worries: treat
+this session as a small warm-up before you start coding again. A lot of you might know the building blocks I'm
+going to use. For those who are new, this is a good start on the anxieties of token usage and the jargon. We'll also
+work through two failure modes, and what the studies I've brought tackle."
+
 | Min | Screens | You do |
 |---|---|---|
-| 0–1 | 1 Same prompt | Read the prompt. Point at the two strips: one long, one short. "You'll see which goes easier on you." |
-| 1–2.5 | 2 What it rereads | "Every message, all of this goes again." Live: `/context` in a real session |
-| 2.5–4.5 | 3 Toolkit | One line per tool, trigger first. Land on plugins: the one that doesn't come to the web |
-| 4.5–7 | 4–6 Test 1 | Hands up (0/6/12/18) → "None of them." Strip's middle dims → the note and `/compact` |
-| 7–9.5 | 7–9 Test 2 | Hands up (30/70/95%) → 68%; strip's CLAUDE.md tail greys → write it yourself, short |
-| 9.5–12 | 10–12 Test 3 | Hands up → 45%, **sycophancy** → fresh session with criteria; strip resets |
-| 12–13 | 13 Tonight | Three steps |
-| 13–13.5 | 14 Close | Same as screen 1, answers filled in |
-| 13.5–15 | — | Questions |
+| 0–1 | 1 Two questions | Thanks to Prof. Ramtin. Hands up for each question; say the count out loud |
+| 1–2 | 2 Premise | "Demystifying": the four parts, then define LLM and token. Tokens = where the usage anxiety lives |
+| 2–3 | 3 Same prompt | Read the prompt. Point at the two strips: one long, one short. "You'll see which goes easier on you." |
+| 3–4.5 | 4 What it rereads | "Every message, all of this goes again. That's your tokens." Live: `/context` in a real session |
+| 4.5–6.5 | 5 Toolkit | One line per tool, trigger first. Land on plugins: the one that doesn't come to the web |
+| 6.5–9 | 6–8 Failure mode 1 | Hands up (0/6/12/18) → "None of them." Guess the name → **click: context rot** → the note and `/compact` |
+| 9–11 | 9–11 Failure mode 1 | Same failure, in your notes: hands up (30/70/95%) → 68%; strip's CLAUDE.md tail greys → write it yourself, short |
+| 11–13.5 | 12–14 Failure mode 2 | Hands up → 45% → **click: sycophancy** → fresh session with criteria; strip resets |
+| 13.5–14.5 | 15 Recap | One idea underneath: it rereads everything. Each row is one habit |
+| 14.5–15.5 | 16 Tonight | Three steps |
+| 15.5–16 | 17 Close | Same as screen 3, answers filled in. "Thank you. Questions?" |
+| 16– | — | Questions |

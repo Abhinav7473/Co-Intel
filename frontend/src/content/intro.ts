@@ -1,10 +1,14 @@
 /**
  * The junior seminar (/intro). Brief: docs/seminar/brief.md. Every word the room reads lives here, so
  * `make check-content` sees all of it (no preaching words, no jargon, earned words only after their reveal).
+ * Premise: demystifying the LLM space. A preface (hands up, the premise and its two terms), the mechanism and the tools,
+ * two failure modes (context rot over six screens, sycophancy over three), a recap, tonight's steps, the close.
  * One idea per screen, about 50 words at most. A test is three screens: the question, the answer, what we do now.
  * PageDown or a clicker moves one screen. The context strip at the bottom shows what each screen's session carries.
  */
 export type ScreenId =
+  | "welcome"
+  | "premise"
   | "hook"
   | "carries"
   | "toolkit"
@@ -17,11 +21,12 @@ export type ScreenId =
   | "review-ask"
   | "review"
   | "review-do"
+  | "recap"
   | "tonight"
   | "close";
 
 /** How a screen is composed. Each kind has its own layout in Panels/IntroPage. */
-export type ScreenKind = "split" | "diagram" | "list" | "ask" | "answer" | "do" | "steps";
+export type ScreenKind = "hands" | "premise" | "split" | "diagram" | "list" | "ask" | "answer" | "do" | "recap" | "steps";
 
 export interface IntroScreen {
   id: ScreenId;
@@ -38,6 +43,20 @@ export const TAGLINE = "Same prompt. Different answer.";
 export const PROMPT = "Read this project and list the three weakest points a crit panel would raise. Point to the files.";
 
 export const SCREENS: IntroScreen[] = [
+  {
+    id: "welcome",
+    kind: "hands",
+    beat: "Hello",
+    title: "Two quick questions",
+    body: "Hands up, then keep them up if the second one is you too.",
+  },
+  {
+    id: "premise",
+    kind: "premise",
+    beat: "Today",
+    title: "Demystifying the LLM space",
+    body: "A warm-up before you code again: what these tools read, the words around them, and two ways they fail.",
+  },
   {
     id: "hook",
     kind: "split",
@@ -62,65 +81,72 @@ export const SCREENS: IntroScreen[] = [
   {
     id: "rot-ask",
     kind: "ask",
-    beat: "Test 1",
+    beat: "Failure mode 1",
     title: "Of 18 models, how many did better with the whole history?",
     body: "Same question, asked in an hour-old session full of drafts, and in a fresh one that only got a five-line note.",
   },
   {
     id: "rot",
     kind: "answer",
-    beat: "Test 1",
+    beat: "Failure mode 1",
     title: "None of them.",
     body: "All 18 answered better from the short version. In a long input, models use the start and the end best, and the middle least.",
   },
   {
     id: "rot-do",
     kind: "do",
-    beat: "Test 1",
+    beat: "Failure mode 1",
     title: "New task, new session, with a five-line note",
     body: "Running long mid-task? Compact it, and say what to keep.",
   },
   {
     id: "rules-ask",
     kind: "ask",
-    beat: "Test 2",
+    beat: "Failure mode 1",
     title: "At 500 instructions, what share did the best model follow?",
     body: "Researchers gave 20 models between 10 and 500 instructions at once, and counted how many were followed.",
   },
   {
     id: "rules",
     kind: "answer",
-    beat: "Test 2",
+    beat: "Failure mode 1",
     title: "68%, and the later ones go first.",
     body: "The rest were skipped without a word. A longer instruction file quietly loses instructions.",
   },
   {
     id: "rules-do",
     kind: "do",
-    beat: "Test 2",
+    beat: "Failure mode 1",
     title: "Write CLAUDE.md yourself, and keep it short",
     body: "In a second study, notes written by AI were the one kind that made results worse. Add a line only when it gets something wrong twice.",
   },
   {
     id: "review-ask",
     kind: "ask",
-    beat: "Test 3",
+    beat: "Failure mode 2",
     title: "Once a model knows you, how much more does it side with you?",
     body: "The session that helped you write it knows you, your drafts and your effort. Now it reviews your work.",
   },
   {
     id: "review",
     kind: "answer",
-    beat: "Test 3",
+    beat: "Failure mode 2",
     title: "Up to 45% more often.",
     body: "Researchers replayed real chats from 38 people, with and without what the model knew about them.",
   },
   {
     id: "review-do",
     kind: "do",
-    beat: "Test 3",
+    beat: "Failure mode 2",
     title: "Get reviews from a fresh session",
     body: "Or a subagent, with your criteria pasted in. Models also rate their own writing above equally good writing by others.",
+  },
+  {
+    id: "recap",
+    kind: "recap",
+    beat: "Recap",
+    title: "What we demystified",
+    body: "One idea underneath it all: every message, it rereads everything. Each habit decides what that is.",
   },
   {
     id: "tonight",
@@ -137,6 +163,29 @@ export const SCREENS: IntroScreen[] = [
     body: "Now you know what changes the answer, and it isn’t the prompt.",
   },
 ];
+
+/** The opening hands up: said aloud, counted by the presenter. */
+export const HANDS_UP = [
+  "Who uses Claude, Gemini or ChatGPT for projects?",
+  "Who has used Claude Code or Codex?",
+] as const;
+
+/** The premise: the two words everything else leans on, defined before they are used. */
+export const TERMS = [
+  { word: "LLM", means: "Large language model: the engine inside Claude, Gemini and ChatGPT. It predicts the next word." },
+  { word: "Token", means: "The unit it reads: a short word, or part of a longer one. Longer chats use more, and more of your limit." },
+] as const;
+export const AGENDA = ["What it reads, every message", "Six tools, decoded", "Two failure modes, and the studies behind them", "Tonight, on your own project"] as const;
+
+/** The conclusion: each part of the talk in one line, and the habit it leaves. */
+export const RECAP = [
+  { part: "What it reads", line: "All of it, every message. A long session costs more tokens and answers worse." },
+  { part: "The tools", line: "Six of them. Add one when its trigger happens, not before." },
+  { part: "context rot", line: "New task, new session. A short CLAUDE.md you wrote yourself." },
+  { part: "sycophancy", line: "Reviews come from a fresh session, with your criteria pasted in." },
+] as const;
+
+export const THANKS = "Thank you. Questions?";
 
 /** Hands-up options on a question screen: said aloud, counted by the presenter, never clicked. */
 export const ASK: Record<"rot-ask" | "rules-ask" | "review-ask", readonly string[]> = {
@@ -179,6 +228,8 @@ export const CARRY = {
  * `dim` greys part of a segment (the middle of a long session; the instructions a long file loses).
  */
 export const STRIP: Record<ScreenId, { notes: number; session: number; dim?: "middle" | "notes-tail" }> = {
+  welcome: { notes: 0.06, session: 0.02 },
+  premise: { notes: 0.06, session: 0.04 },
   hook: { notes: 0.06, session: 0.06 },
   carries: { notes: 0.06, session: 0.14 },
   toolkit: { notes: 0.06, session: 0.22 },
@@ -191,6 +242,7 @@ export const STRIP: Record<ScreenId, { notes: number; session: number; dim?: "mi
   "review-ask": { notes: 0.07, session: 0.6 },
   review: { notes: 0.07, session: 0.66 },
   "review-do": { notes: 0.07, session: 0.03 },
+  recap: { notes: 0.07, session: 0.02 },
   tonight: { notes: 0.07, session: 0.02 },
   close: { notes: 0.07, session: 0.02 },
 };
@@ -214,6 +266,8 @@ export const WORDS = [
   { word: "sycophancy", revealIn: "review", means: "Agreeing with you to keep you happy." },
 ] as const;
 export const NAMED = "This has a name:";
+/** Under a hidden word until the presenter clicks it. */
+export const CLICK = "Click to reveal";
 
 /** Test 1 artifacts. */
 export const ROT = {

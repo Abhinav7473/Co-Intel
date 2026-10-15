@@ -296,3 +296,10 @@ screens of 7 kinds; the context strip as signature and progress; no top bar, rai
 width (a deviation from "every page uses CONTAINER", flagged to the owner); four type sizes; accent for two jobs; curly
 apostrophes; earned word announced via sr-only text. Skills: impeccable (critique, craft-floor), design-taste-frontend,
 high-end-visual-design, web-design-guidelines. impeccable's launcher/detector not run (downloads a binary).
+
+## 2026-10-15: /intro v7, preface and conclusion
+Owner: the talk lacked a preface and a conclusion, and the premise is demystifying the LLM space; gave the opening
+script (thanks to Prof. Ramtin, two hands-up questions, token anxiety and jargon, two failure modes). Added welcome,
+premise (LLM and token defined) and recap screens, thanks on the close; the three tests regrouped as two failure modes
+(test 2 joins context rot); the two words now shuffle until clicked (was: decode once on view / static). "No clicks in
+the talk" relaxed for those two. Jargon check now lets LLM/token through after the premise. Skill: made-to-stick.

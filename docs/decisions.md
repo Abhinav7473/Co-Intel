@@ -52,11 +52,12 @@ Date = when last decided or confirmed.
 ## Local: junior seminar (/intro)
 | Date | Decision | Durability |
 |---|---|---|
-| 2026-10-10 | The talk follows `docs/seminar/brief.md`: a hook into Claude Code on students' own projects; the toolkit demystified; three researched failures; tonight's steps. | Volatile: when the brief changes |
-| 2026-10-10 | Editorial poster design (owner's pick after the impeccable audit): 14 screens of 7 kinds (split, diagram, list, ask, answer, do, steps); about 50 words per screen; a test is ask → answer → what we do now. | Volatile: if the talk stops being presenter-paced |
+| 2026-10-15 | The talk follows `docs/seminar/brief.md`. Premise: demystifying the LLM space. Preface (thanks, hands up, LLM and token defined), the mechanism, the toolkit, two failure modes (context rot, sycophancy), recap, tonight's steps, close with thanks. | Volatile: when the brief changes |
+| 2026-10-15 | Editorial poster design (owner's pick after the impeccable audit): 17 screens of 10 kinds (hands, premise, split, diagram, list, ask, answer, do, recap, steps); about 50 words per screen; a test is ask → answer → what we do now. | Volatile: if the talk stops being presenter-paced |
 | 2026-10-10 | The context strip, pinned to the bottom of every screen, is the signature and the progress indicator: the talk as one session that grows, dims in the middle (test 1), loses its CLAUDE.md tail (test 2) and starts fresh. | Durable |
 | 2026-10-10 | `/intro` has no site chrome (AppShell hides the top bar and backdrop) and uses `STAGE` (full width, 6vw gutters) instead of `CONTAINER`. Flat white ground; artifacts on `sunken` sheets; no ghost cards. | Volatile: if the owner wants `CONTAINER` everywhere (CLAUDE.md rule) |
 | 2026-10-10 | Four type sizes scaled by min(vw, vh): statement ≈ 127px, head ≈ 80px, body ≈ 33px, meta ≈ 19px at 1080p; screens fit at 720p. Display above 6rem is deliberate (poster). | Volatile: if the room's screen is known and different |
+| 2026-10-15 | The two earned words shuffle until the presenter clicks them, then lock in and show their meaning; the button drops focus so PageDown keeps working. "LLM" and "token" are earned on the premise screen (`check-content`). | Durable |
 | 2026-10-10 | Colour jobs: accent = the session segment and the two earned words; warn = the failure numbers and "No"; ink for everything else. | Durable |
 | 2026-10-10 | Every audience string lives in `content/intro.ts`; `make check-content` checks it; `make check-intro` checks layout and paging. Snap at ≥ 1024px with `scroll-padding-top: 0`. | Durable |
 | 2026-10-10 | Toolkit facts come from the Claude Code docs ("Extend Claude Code", "Cloud environments: what carries over"); recheck before each talk. | Volatile: Claude Code releases |

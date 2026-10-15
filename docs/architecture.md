@@ -12,7 +12,7 @@ the mistakes poll counts only that browser). Hooks and pages don't know which ba
 | Path | Page | Purpose |
 |---|---|---|
 | `/` | `features/home/HomePage` | Hero with context scrubber + its guide, status, theme map, tools, sources |
-| `/intro` | `features/intro/IntroPage` | The junior seminar (brief: `docs/seminar/brief.md`): 14 screens of 7 kinds from `content/intro.ts`; `Panels` renders each kind and the context strip; no site chrome |
+| `/intro` | `features/intro/IntroPage` | The junior seminar (brief: `docs/seminar/brief.md`): 17 screens of 10 kinds from `content/intro.ts`; `Panels` renders each kind and the context strip; no site chrome |
 | `/map` | `features/map/MapPage` | The theme map: "You are here", every topic and scene one click away, tools |
 | `/topics/$slug` | `features/topic/TopicPage` | One topic in its theme hue: mini-map rail, scenes, your entries, "Where next" |
 | `/audit`, `/audit/$id` | `features/audit/*` | Paste setup → live report → save; saved report + diff vs previous |

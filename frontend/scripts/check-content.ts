@@ -5,7 +5,7 @@
 import { SECTIONS } from "../src/content/brief.ts";
 import { SLIDES } from "../src/content/deck.ts";
 import * as INTRO from "../src/content/intro.ts";
-const { SCREENS, WORDS } = INTRO;
+const { SCREENS, WORDS, TERMS } = INTRO;
 import { TAKEAWAYS } from "../src/content/takeaways.ts";
 
 const LIMITS = { lines: 4, columns: 3, line: 90, heading: 60, more: 220, details: 320 };
@@ -70,7 +70,9 @@ for (const sec of SECTIONS) {
 
 // the junior seminar: short beats, no preaching, no jargon, words earned before they're used
 const PREACH = /\b(should|always|never|must|don['’]t)\b/i;
-const JARGON = /\b(context window|tokens?|LLMs?|prompt engineering|agents?|model weights)\b/i;
+// "LLM" and "token" are the premise: defined on that screen (TERMS), then earned like WORDS below
+const JARGON = /\b(context window|prompt engineering|agents?|model weights)\b/i;
+const EARNED = [...WORDS, ...TERMS.map((t) => ({ word: t.word.toLowerCase(), revealIn: "premise" }))];
 // source titles and links are proper names (e.g. "How Many Instructions Can LLMs Follow…"), so they're not checked
 const SKIP = new Set(["sources", "source", "href"]);
 const strings = (v: unknown): string[] =>
@@ -88,7 +90,7 @@ for (const c of SCREENS) {
   if (len(c.beat) > 18) fail(c.id, `intro strip label ${len(c.beat)} > 18 chars`);
   // a word may appear only from the screen that reveals it onward
   const at = SCREENS.indexOf(c);
-  for (const w of WORDS) if (at < SCREENS.findIndex((x) => x.id === w.revealIn) && `${c.title} ${c.body}`.toLowerCase().includes(w.word)) fail(c.id, `"${w.word}" used before it is earned`);
+  for (const w of EARNED) if (at < SCREENS.findIndex((x) => x.id === w.revealIn) && `${c.title} ${c.body}`.toLowerCase().includes(w.word)) fail(c.id, `"${w.word}" used before it is earned`);
 }
 
 if (problems.length) {

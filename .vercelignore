@@ -1,0 +1,3 @@
+# Vercel builds frontend/ only (see vercel.json). Keep the FastAPI app out of the upload so
+# nothing tries to detect or build Python.
+/backend

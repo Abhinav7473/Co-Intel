@@ -34,7 +34,15 @@ container: that checks the container's copy, which can be stale.
 Your editor shows unresolved imports (no `node_modules` locally). Types are checked by `make lint`.
 
 ## Deploy (Vercel, frontend only)
-`vercel.json` at the root builds `frontend/` with `VITE_BACKEND=local` and serves `frontend/dist` with an SPA rewrite.
-Import the repo in Vercel and leave Root Directory as the repo root. Security headers are copied from
-`infra/nginx/prod.conf`: change both together. `content/build-facts.json` and `previews.json` are committed build
-inputs, so run `make facts` / `make previews` and commit before deploying.
+`vercel.json` builds `frontend/` with `VITE_BACKEND=local` (data lives in the browser) and serves `frontend/dist`.
+`.vercelignore` keeps `backend/` out. Headers mirror `infra/nginx/prod.conf`: change both together.
+1. Run `make facts` / `make previews`, commit, then `git push origin main` (Vercel builds what is on GitHub).
+2. vercel.com → sign in with GitHub → **Add New… → Project** → import `Abhinav7473/Co-Intel`.
+3. Root Directory: leave as `./` (repo root). Framework Preset: leave as detected; `vercel.json` sets "Other".
+4. Build / Output / Install overrides: leave all off. `vercel.json` supplies them. No env vars needed.
+5. **Deploy**. Wait for the build log to finish (tsc, then vite build).
+6. Open the URL, go to `/intro`, then press reload on a deep link (e.g. `/intro`): it must not 404.
+7. Optional: Settings → Domains → add your domain and set the DNS record Vercel shows.
+8. Redeploys: every push to `main` deploys to production; other branches get preview URLs.
+Node is 24.x (Vercel's default; pin it in Settings → Build and Deployment if that changes).
+The Vercel Toolbar on preview URLs is blocked by the CSP (`script-src 'self'`); that is expected.

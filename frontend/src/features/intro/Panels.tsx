@@ -1,12 +1,16 @@
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
+  AGENDA,
   ASK,
   CARRY,
+  CLICK,
   HANDS,
+  HANDS_UP,
   NAMED,
   PARTS,
   PROMPT,
+  RECAP,
   REVIEW,
   ROT,
   RULES,
@@ -16,6 +20,8 @@ import {
   STEPS,
   STRIP,
   STRIP_LABEL,
+  TERMS,
+  THANKS,
   TOOLS,
   TOOLS_HEAD,
   WEB,
@@ -113,6 +119,12 @@ export function Screen({ s, i }: { s: IntroScreen; i: number }) {
   const Title = i === 0 ? "h1" : "h2";
   const id = `${s.id}-title`;
   switch (s.kind) {
+    case "hands":
+      return <Hands s={s} Title={Title} id={id} />;
+    case "premise":
+      return <Premise s={s} id={id} />;
+    case "recap":
+      return <Recap s={s} id={id} />;
     case "split":
       return <Split s={s} Title={Title} id={id} />;
     case "diagram":
@@ -200,7 +212,7 @@ function Split({ s, Title, id }: { s: IntroScreen; Title: "h1" | "h2"; id: strin
             </div>
           ))}
         </div>
-        {answered ? null : <p className={cn(META, "mt-[3vh]")}>{SESSIONS.hidden}</p>}
+        {answered ? <p className={cn(HEAD, "mt-[6vh]")}>{THANKS}</p> : <p className={cn(META, "mt-[3vh]")}>{SESSIONS.hidden}</p>}
       </div>
     </div>
   );
@@ -324,7 +336,7 @@ function Answer({ s, id }: { s: IntroScreen; id: string }) {
         {emphasise(s.title)}
       </h2>
       <p className={cn(BODY, "mt-[3vh] max-w-[46ch] text-ink/85")}>{s.body}</p>
-      {s.id === "rot" ? <Named word="context rot" /> : null}
+      {s.id === "rot" ? <Reveal word="context rot" className="mt-[4vh]" /> : null}
       {s.id === "review" ? (
         <div className="mt-[4vh] grid gap-[4vh] lg:grid-cols-12 lg:items-end lg:gap-x-[4vw]">
           <Rows className="lg:col-span-7" />
@@ -332,16 +344,6 @@ function Answer({ s, id }: { s: IntroScreen; id: string }) {
         </div>
       ) : null}
     </div>
-  );
-}
-
-function Named({ word }: { word: (typeof WORDS)[number]["word"] }) {
-  const w = WORDS.find((x) => x.word === word)!;
-  return (
-    <p className={cn(BODY, "mt-[4vh]")}>
-      <span className="text-mute">{NAMED} </span>
-      <span className="font-display text-[1.35em] font-semibold text-accent">{w.word}</span>
-    </p>
   );
 }
 
@@ -375,31 +377,44 @@ function Rows({ className }: { className?: string }) {
   );
 }
 
-/** The one earned word: shown as a description first, then named, decoded into place. */
+/**
+ * An earned word: its letters keep shuffling while the screen is up, until the presenter clicks it; then they lock in
+ * left to right (after motion-primitives' TextScramble). The button drops focus, so Space and PageDown keep scrolling.
+ */
 function Reveal({ word, className }: { word: (typeof WORDS)[number]["word"]; className?: string }) {
   const w = WORDS.find((x) => x.word === word)!;
   const reduce = useReducedMotion();
   const [shown, setShown] = useState(reduce ? w.word : scrambled(w.word, 0));
-  const begin = () => {
-    if (reduce) return setShown(w.word);
-    // a short decode (after motion-primitives' TextScramble): letters lock in left to right over ~0.9s
+  const [done, setDone] = useState(Boolean(reduce));
+  const revealed = useRef(Boolean(reduce));
+  // shuffle on a timer while mounted and not yet revealed; React 19 runs the returned cleanup on unmount
+  const shuffle = (el: HTMLButtonElement | null) => {
+    if (!el || revealed.current) return;
+    const timer = setInterval(() => !revealed.current && setShown(scrambled(w.word, 0)), 70);
+    return () => clearInterval(timer);
+  };
+  const reveal = (e: MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.blur();
+    if (revealed.current) return;
+    revealed.current = true;
     const start = performance.now();
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / 900);
       setShown(scrambled(w.word, t));
       if (t < 1) requestAnimationFrame(step);
+      else setDone(true);
     };
     requestAnimationFrame(step);
   };
   return (
-    <motion.div className={className} onViewportEnter={begin} viewport={{ once: true, amount: 0.8 }}>
+    <div className={className}>
       <p className={META}>{NAMED}</p>
-      <p className={cn(HEAD, "mt-[0.6vh] text-accent")}>
+      <button ref={shuffle} type="button" onClick={reveal} className={cn(HEAD, "mt-[0.6vh] cursor-pointer text-left text-accent")}>
         <span className="sr-only">{w.word}</span>
         <span aria-hidden>{shown}</span>
-      </p>
-      <p className={cn(BODY, "mt-[1vh]")}>{w.means}</p>
-    </motion.div>
+      </button>
+      <p className={cn(BODY, "mt-[1vh]", !done && "text-mute")}>{done ? w.means : CLICK}</p>
+    </div>
   );
 }
 
@@ -411,6 +426,73 @@ function scrambled(word: string, t: number) {
     .split("")
     .map((ch, i) => (i < locked || ch === " " ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]))
     .join("");
+}
+
+/* hands: the opening hands up, two questions at poster size */
+function Hands({ s, Title, id }: { s: IntroScreen; Title: "h1" | "h2"; id: string }) {
+  return (
+    <div>
+      <Title id={id} className={cn(META, "uppercase tracking-[0.12em]")}>
+        {s.title}
+      </Title>
+      <ol className="mt-[4vh] space-y-[5vh]">
+        {HANDS_UP.map((q, k) => (
+          <li key={q} className="grid grid-cols-[auto_1fr] items-baseline gap-x-[3vw]">
+            <span className={cn(HEAD, "tabular-nums text-mute")}>{k + 1}</span>
+            <span className={cn(STATEMENT, "max-w-[20ch]")}>{q}</span>
+          </li>
+        ))}
+      </ol>
+      <p className={cn(BODY, "mt-[5vh] text-mute")}>{s.body}</p>
+    </div>
+  );
+}
+
+/* premise: what today demystifies, and the two words everything leans on */
+function Premise({ s, id }: { s: IntroScreen; id: string }) {
+  return (
+    <div className="grid gap-[5vh] lg:grid-cols-12 lg:gap-x-[4vw]">
+      <div className="lg:col-span-6">
+        <h2 id={id} className={cn(STATEMENT, "max-w-[12ch]")}>
+          {s.title}
+        </h2>
+        <p className={cn(BODY, "mt-[3vh] max-w-[34ch] text-ink/85")}>{s.body}</p>
+        <ol className={cn(BODY, "mt-[4vh] space-y-[1vh]")}>
+          {AGENDA.map((a, k) => (
+            <li key={a} className="flex gap-[1vw]">
+              <span className="tabular-nums text-mute">{k + 1}</span>
+              <span>{a}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <dl className="space-y-[4vh] lg:col-span-6 lg:self-center">
+        {TERMS.map((t) => (
+          <div key={t.word} className="border-t border-line-strong pt-[2vh]">
+            <dt className={cn(HEAD, "text-accent")}>{t.word}</dt>
+            <dd className={cn(BODY, "mt-[1vh] text-ink/85")}>{t.means}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+/* recap: the conclusion, each part of the talk in one ruled line */
+function Recap({ s, id }: { s: IntroScreen; id: string }) {
+  return (
+    <div>
+      <Copy s={s} id={id} />
+      <dl className="mt-[5vh] divide-y divide-line border-y border-line">
+        {RECAP.map((r) => (
+          <div key={r.part} className="grid gap-[1vh] py-[2.2vh] lg:grid-cols-12 lg:gap-x-[4vw]">
+            <dt className={cn(BODY, "font-semibold lg:col-span-4", WORDS.some((w) => w.word === r.part) && "font-display text-accent")}>{r.part}</dt>
+            <dd className={cn(BODY, "text-ink/85 lg:col-span-8")}>{r.line}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
 }
 
 /* do: the habit on the left, the exact thing you type on the right, large enough to photograph */
